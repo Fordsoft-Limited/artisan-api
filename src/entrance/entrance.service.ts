@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { LoginRequest, LoginResponse } from './model/model';
+import { LoginRequest, LoginResponse } from './model/login.model';
 
 @Injectable()
 export class EntranceService {

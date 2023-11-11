@@ -1,0 +1,82 @@
+Artisan models
+Blogs
+- Id
+- Description
+- author(user)
+- Title
+- dateCreated 
+- lastModified
+- Media 
+Guests
+- Id
+- reasonForVisit
+- methodOfContact
+- numberOfVisit
+- Contact
+Artisan
+- Id
+- businessType
+- Contact
+- Rank
+- serviceDescription
+- lastModified
+- createdBy(user)
+Contacts
+- Id
+- category(Artisan, Guests, User)
+- Name
+- Phone
+- Email
+- Street
+- City
+- postalCode
+- dateCreated
+Users
+- Id
+- Username
+- Password
+- Contact 
+- isActive
+- isBlocked
+- invitationCode
+- lastModified
+- Media
+- createdBy(user)
+Roles
+- Id
+- useId
+- roleName
+- dateCreated
+Settings
+- Id
+- Name
+- Category
+- Description
+- dateCreated
+- createdBy(user)
+Advertisement
+- Id
+- Category
+- Description
+- websiteLink
+- businessName
+- Contact
+- Media
+- createdBy(user)
+Media
+- Id
+- fileName
+- fileType
+- dateCreated
+- createdBy(user)
+Services
+- Id
+- Media
+- artisanId
+- dateCreated
+Rating
+- Id
+- userId 
+- artisanId 
+- Rate 
+- dateCreated
