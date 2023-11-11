@@ -1,6 +1,4 @@
 export class ErrorCode{
-    static readonly SUCCESS_STATUS:string="Success"
-    static readonly FAIL_STATUS:string="Fail"
     static readonly HTTP_200:number=200
     static readonly HTTP_400:number=400
     static readonly HTTP_500:number=500
@@ -11,6 +9,8 @@ export class ErrorCode{
 
 }
 export class NotificationMessage{
+    static readonly FAIL_STATUS:string="Fail"
+    static readonly SUCCESS_STATUS:string="Success"
     static readonly RECORD_NOT_FOUND:string="Record with specified constraints not found"
     static readonly INVALID_USER:string="Either username/password is incorrect"
 }

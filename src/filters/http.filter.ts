@@ -1,5 +1,5 @@
 import {ArgumentsHost, Catch, ExceptionFilter, HttpException} from '@nestjs/common';
-import { ErrorCode } from 'src/utils/app.util';
+import { NotificationMessage } from 'src/utils/app.util';
 
 
 @Catch(HttpException)
@@ -20,7 +20,7 @@ export class HttpExceptionFilter implements  ExceptionFilter {
         return response.status(statusCode).json({
             status: statusCode,
             createdBy: "HttpExceptionFilter",
-            message: ErrorCode.FAIL_STATUS,
+            message: NotificationMessage.FAIL_STATUS,
             data: exception.message
         });
     }

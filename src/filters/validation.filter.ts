@@ -1,6 +1,6 @@
 import {ArgumentsHost, Catch, ExceptionFilter} from '@nestjs/common';
 import {ValidationException} from './validation.exception';
-import { ErrorCode } from 'src/utils/app.util';
+import { ErrorCode, NotificationMessage } from 'src/utils/app.util';
 
 @Catch(ValidationException)
 export class ValidationFilter implements ExceptionFilter {
@@ -13,7 +13,7 @@ export class ValidationFilter implements ExceptionFilter {
 
         return response.status(ErrorCode.HTTP_400).json({
            statusCode:ErrorCode.HTTP_400,
-           message: ErrorCode.FAIL_STATUS,
+           message: NotificationMessage.FAIL_STATUS,
            createdBy: "ValidationFilter",
            data: exception.validationErrors
         });

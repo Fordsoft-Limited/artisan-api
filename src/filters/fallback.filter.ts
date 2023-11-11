@@ -1,5 +1,5 @@
 import {ArgumentsHost, Catch, ExceptionFilter} from '@nestjs/common';
-import { ErrorCode } from 'src/utils/app.util';
+import { ErrorCode, NotificationMessage } from 'src/utils/app.util';
 
 @Catch()
 export class FallbackExceptionFilter implements ExceptionFilter{
@@ -15,7 +15,7 @@ export class FallbackExceptionFilter implements ExceptionFilter{
 
         return response.status(ErrorCode.HTTP_500).json({
             statusCode: ErrorCode.HTTP_500,
-            message: ErrorCode.FAIL_STATUS,
+            message: NotificationMessage.FAIL_STATUS,
             createdBy: "FallbackExceptionFilter",
             data: exception.message ? exception.message :
                 'Unexpected error ocurred'
