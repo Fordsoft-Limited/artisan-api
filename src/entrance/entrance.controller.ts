@@ -1,7 +1,7 @@
 import { Body, Controller, HttpCode, Param, Post, Res } from '@nestjs/common';
 import { EntranceService } from './entrance.service';
 import { LoginRequest } from './model/login.model';
-import { ArtisanApiResponse } from 'src/model/app.model';
+import { ArtisanApiResponse } from 'src/model/app.response.model';
 import { ErrorCode } from 'src/utils/app.util';
 
 @Controller('entrance')

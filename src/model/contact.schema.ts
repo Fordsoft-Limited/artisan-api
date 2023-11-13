@@ -8,7 +8,6 @@ export enum Category{
 }
 
 @Schema({ timestamps: true })
-
 export class Contacts {
   @Prop()
   category: Category;
