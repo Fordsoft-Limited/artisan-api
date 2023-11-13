@@ -13,6 +13,7 @@ import { Guests, GuestSchema } from 'src/model/guest.schema';
     ]),
   ],
   controllers: [EntranceController],
-  providers: [EntranceService]
+  providers: [EntranceService],
+  exports: [EntranceService],
 })
 export class EntranceModule {}

@@ -3,6 +3,7 @@ import { EntranceService } from './entrance.service';
 import { LoginRequest } from './model/login.model';
 import { ArtisanApiResponse } from 'src/model/app.response.model';
 import { ErrorCode } from 'src/utils/app.util';
+import { VisitorRequest } from 'src/model/app.request.model';
 
 @Controller('entrance')
 export class EntranceController {
@@ -14,4 +15,10 @@ export class EntranceController {
     async login(@Body() payload: LoginRequest):Promise<ArtisanApiResponse>{
         return await this.entranceService.login(payload)
     }
+    @Post("visitor/register")
+    async createVisitRequest(@Body()
+        visitorRequest: VisitorRequest
+      ): Promise<ArtisanApiResponse> {
+        return await this.entranceService.createVisitRequest(visitorRequest);
+      }
 }

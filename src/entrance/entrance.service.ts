@@ -57,7 +57,7 @@ export class EntranceService {
     const newGuest = new this.guestsModel({
       reasonForVisit: visitorRequest.reasonForVisit,
       methodOfContact: visitorRequest.methodOfContact,
-      numberOfVisit: visitorRequest.numberOfVisit,
+      numberOfVisit: 1,
       contact: savedContact._id,
     });
 
