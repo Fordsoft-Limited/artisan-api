@@ -7,9 +7,7 @@ import { HttpExceptionFilter } from "./filters/http.filter";
 import { ValidationException } from "./filters/validation.exception";
 import { ValidationFilter } from "./filters/validation.filter";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import * as dotenv from 'dotenv';
 async function bootstrap() {
-  dotenv.config();
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix("api/v1");
 

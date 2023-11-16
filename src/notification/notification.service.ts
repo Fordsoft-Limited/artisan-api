@@ -2,18 +2,14 @@ import { Injectable } from "@nestjs/common";
 import * as bcrypt from "bcrypt";
 import { MAIL_FROM } from "src/utils/constants";
 import transporter from "src/config/mailer.config";
-import { EnvService } from "src/env/env.service";
+import { ConfigService } from "@nestjs/config";
 import { AppConfig } from "src/config/app.config";
 
 @Injectable()
 export class NotificationService {
-  constructor(private readonly envService: EnvService) {
-    console.log(
-      "Mongo DB Connection::::: ",
-      this.envService.get('MONGO_CONNECTION_ARTISAN')
-    );
+  constructor(private configService: ConfigService){
+    
   }
-
   public async sendInvitationCode(email: string): Promise<string> {
     console.log("Start hasing code......::::::");
     const hashedEmail = await this.hashEmail(email);
@@ -38,7 +34,7 @@ export class NotificationService {
   }
 
   private async hashEmail(email: string): Promise<string> {
-    const SALT = this.envService.get(AppConfig.APP_SALT);
+    const SALT = process.env.APP_SALT||10;
     console.log("Data from environment::::::::", SALT);
 
     return await bcrypt.hash(email, SALT);
