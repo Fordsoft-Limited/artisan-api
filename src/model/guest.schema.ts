@@ -19,7 +19,7 @@ export class Guests {
   @Prop()
  numberOfVisit: number;
 
- @Prop({ type: Types.ObjectId, ref: 'Contacts', select: '_id name phone email street city postalCode' })
+ @Prop({ type: Types.ObjectId, ref: 'Contacts'})
  contact: Types.ObjectId;
 
 }

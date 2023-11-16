@@ -4,7 +4,7 @@ import { ErrorCode, NotificationMessage } from "src/utils/app.util";
 import { ArtisanApiResponse } from "src/model/app.response.model";
 import { VisitorRequest } from "src/model/app.request.model";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { Model, ObjectId } from "mongoose";
 import { Category, Contacts } from "src/model/contact.schema";
 import { Guests } from "src/model/guest.schema";
 import { DuplicateResourceException } from "src/filters/conflict.exception";
@@ -24,17 +24,19 @@ export class EntranceService {
       ErrorCode.HTTP_200
     );
   }
-  async checkDuplicate({ email, phone }): Promise<void> {
+  async checkDuplicate({ email, phone, willIdReturn }): Promise<Contacts> {
     // Check if a contact with the same email or phone already exists
     const existingContact = await this.contactsModel.findOne({
       $or: [{ email: email }, { phone: phone }],
     });
 
-    if (existingContact) {
+    if (existingContact && !willIdReturn) {
       // If a contact with the same email or phone already exists, throw a conflict exception
       throw new DuplicateResourceException(
         NotificationMessage.DUPLICATE_ACCOUNT
       );
+    }else{
+      return existingContact
     }
   }
   public async createContact({
@@ -71,7 +73,7 @@ export class EntranceService {
   async createVisitRequest(
     visitorRequest: VisitorRequest
   ): Promise<ArtisanApiResponse> {
-    await this.checkDuplicate(visitorRequest);
+    await this.checkDuplicate({...visitorRequest,willIdReturn:false});
     // Create a new contact
     const savedContact = await this.createContact({
       ...visitorRequest,

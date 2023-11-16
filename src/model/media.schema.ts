@@ -9,8 +9,6 @@ export class Media extends Document {
   @Prop()
   fileType: string;
 
- 
-
   @Prop({ type: Types.ObjectId, ref: 'User' })
   createdBy: Types.ObjectId;
 }

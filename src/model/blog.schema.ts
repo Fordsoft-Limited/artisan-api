@@ -17,8 +17,9 @@ export class Blogs extends Document{
   @Prop()
   title: string;
 
-  @Prop()
-  Media: string;
+
+  @Prop({ type: Types.ObjectId, ref: 'Media' })
+  media: Types.ObjectId;
 }
 
 export const BlogsSchema = SchemaFactory.createForClass(Blogs)

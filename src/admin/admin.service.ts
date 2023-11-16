@@ -21,7 +21,7 @@ export class AdminService {
   async checkDuplicateUsername(
     userRequest: UserInvitationRequest
   ): Promise<void> {
-    await this.entranceService.checkDuplicate(userRequest);
+    await this.entranceService.checkDuplicate({...userRequest, willIdReturn:false});
     const existingUser = await this.userModel.findOne({
       username: userRequest.email,
     });

@@ -71,3 +71,24 @@ export class VisitorRequest extends BaseRequest{
 
 export class UserInvitationRequest extends BaseRequest{
 }
+
+export class AdvertisementRequest extends BaseRequest{
+  @ApiProperty()
+  @IsNotEmpty()
+  category: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  description: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  websiteLink: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  businessName: string;
+  @ApiProperty()
+  street: string;
+  @ApiProperty()
+  city: string;
+  @ApiProperty()
+  postalCode: string;
+}
