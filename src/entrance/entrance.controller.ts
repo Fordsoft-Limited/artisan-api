@@ -10,7 +10,6 @@ export class EntranceController {
     constructor(private entranceService: EntranceService){}
 
     @Post("login")
-
     @HttpCode(ErrorCode.HTTP_200)
     async login(@Body() payload: LoginRequest):Promise<ArtisanApiResponse>{
         return await this.entranceService.login(payload)

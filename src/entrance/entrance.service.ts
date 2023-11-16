@@ -5,7 +5,7 @@ import { ArtisanApiResponse } from "src/model/app.response.model";
 import { VisitorRequest } from "src/model/app.request.model";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { Contacts } from "src/model/contact.schema";
+import { Category, Contacts } from "src/model/contact.schema";
 import { Guests } from "src/model/guest.schema";
 import { DuplicateResourceException } from "src/filters/conflict.exception";
 import { DEFAULT_PAGE, DEFAULT_SIZE } from "src/utils/constants";
@@ -24,12 +24,10 @@ export class EntranceService {
       ErrorCode.HTTP_200
     );
   }
-  async createVisitRequest(
-    visitorRequest: VisitorRequest
-  ): Promise<ArtisanApiResponse> {
+  async checkDuplicate({ email, phone }): Promise<void> {
     // Check if a contact with the same email or phone already exists
     const existingContact = await this.contactsModel.findOne({
-      $or: [{ email: visitorRequest.email }, { phone: visitorRequest.phone }],
+      $or: [{ email: email }, { phone: phone }],
     });
 
     if (existingContact) {
@@ -38,20 +36,47 @@ export class EntranceService {
         NotificationMessage.DUPLICATE_ACCOUNT
       );
     }
-
-    // Create a new contact
+  }
+  public async createContact({
+    category,
+    name,
+    phone,
+    email,
+    street = "NA",
+    city = "NA",
+    postalCode = "NA",
+  }: {
+    category: string;
+    name: string;
+    phone: string;
+    email: string;
+    street?: string;
+    city?: string;
+    postalCode?: string;
+  }): Promise<any> {
     const newContact = new this.contactsModel({
-      category: visitorRequest.methodOfContact,
-      name: visitorRequest.name,
-      phone: visitorRequest.phone,
-      email: visitorRequest.email,
-      street: visitorRequest.street,
-      city: visitorRequest.city,
-      postalCode: visitorRequest.postalCode,
+      category,
+      name,
+      phone,
+      email,
+      street,
+      city,
+      postalCode,
     });
 
-    // Save the new contact
-    const savedContact = await newContact.save();
+    // Save the new contact and return it
+    return await newContact.save();
+  }
+
+  async createVisitRequest(
+    visitorRequest: VisitorRequest
+  ): Promise<ArtisanApiResponse> {
+    await this.checkDuplicate(visitorRequest);
+    // Create a new contact
+    const savedContact = await this.createContact({
+      ...visitorRequest,
+      category: Category.Artisan,
+    });
 
     // Create a new guests document with the reference to the contact
     const newGuest = new this.guestsModel({

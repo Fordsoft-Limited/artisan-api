@@ -2,7 +2,28 @@ import { ContactMethod } from "./guest.schema";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsNotEmpty } from "class-validator";
 import { IsPhoneNumber } from "../validators/phone-validation.decorator";
-export class VisitorRequest {
+
+export class BaseRequest {
+  @ApiProperty()
+  @IsNotEmpty()
+  name: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsPhoneNumber()
+  phone: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  constructor(name: string, phone: string, email: string) {
+    this.name = name;
+    this.phone = phone;
+    this.email = email;
+  }
+}
+
+export class VisitorRequest extends BaseRequest{
   @ApiProperty()
   @IsNotEmpty()
   reasonForVisit: string;
@@ -39,13 +60,14 @@ export class VisitorRequest {
     city: string,
     postalCode: string
   ) {
+    super(name, phone, email)
     this.reasonForVisit = reasonForVisit;
     this.methodOfContact = methodOfContact;
-    this.name = name;
-    this.phone = phone;
-    this.email = email;
     this.street = street;
     this.city = city;
     this.postalCode = postalCode;
   }
+}
+
+export class UserInvitationRequest extends BaseRequest{
 }

@@ -5,8 +5,6 @@ import { Document, Types } from 'mongoose';
 export class User extends Document {
   @Prop()
   username: string;
-  @Prop()
-  fullName: string;
 
   @Prop()
   password: string;
