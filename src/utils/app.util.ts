@@ -16,4 +16,8 @@ export class NotificationMessage{
     static readonly INVALID_USER:string="Either username/password is incorrect"
     static readonly VISITOR_FORM_SUBMITTED:string="Great! You have successfully submitted your visitation form. We will get in touch with you soon."
     static readonly INVITATION_SENT:string="Great! invitation successfully sent to the user"
+    static readonly ENTER_CORRECT_ID:string="Please enter correct Id!"
+      static readonly ADVERTISEMENT_RETRIEVE:string="All the advertisement retrieve!"
+
+  static ADVERTISEMENT_SAVED: any
 }
