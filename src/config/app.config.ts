@@ -1,9 +1,9 @@
 export enum AppConfig {
-    MAIL_USERNAME = 'MAIL_USERNAME',
-    MAIL_PASSWORD = 'MAIL_PASSWORD',
-    MAIL_HOST = 'MAIL_HOST',
-    MONGO_CONNECTION = 'MONGO_CONNECTION',
-    MONGO_CONNECTION_ARTISAN = 'MONGO_CONNECTION_ARTISAN',
-    JWT_SECRET = 'JWT_SECRET',
-    APP_SALT = 'APP_SALT',
+    MAIL_USERNAME = 'mailUsername',
+    MAIL_PASSWORD = 'mailPassword',
+    MAIL_HOST = 'mailHost',
+    MONGO_CONNECTION = 'mongoConection',
+    MONGO_CONNECTION_ARTISAN = 'mongoArtisanConnection',
+    JWT_SECRET = 'jwtSecret',
+    APP_SALT = 'appSalt',
   }

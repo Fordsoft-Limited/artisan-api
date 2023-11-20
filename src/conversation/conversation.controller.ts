@@ -1,8 +1,9 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { AdvertisementRequest } from 'src/model/app.request.model';
 import { ArtisanApiResponse } from 'src/model/app.response.model';
 import { ErrorCode, NotificationMessage } from 'src/utils/app.util';
-
+@ApiTags("Conversation")
 @Controller('conversation')
 export class ConversationController {
 

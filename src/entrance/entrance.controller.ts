@@ -4,7 +4,8 @@ import { LoginRequest } from './model/login.model';
 import { ArtisanApiResponse } from 'src/model/app.response.model';
 import { ErrorCode } from 'src/utils/app.util';
 import { VisitorRequest } from 'src/model/app.request.model';
-
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags("Entrance")
 @Controller('entrance')
 export class EntranceController {
     constructor(private entranceService: EntranceService){}

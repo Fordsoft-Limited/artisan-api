@@ -2,7 +2,8 @@ import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 import { ArtisanApiResponse } from "src/model/app.response.model";
 import { AdminService } from "./admin.service";
 import { UserInvitationRequest } from "src/model/app.request.model";
-
+import { ApiTags } from "@nestjs/swagger";
+@ApiTags("admin")
 @Controller("admin")
 export class AdminController {
   constructor(private adminService: AdminService) {}
