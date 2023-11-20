@@ -2,27 +2,33 @@ import { Injectable } from "@nestjs/common";
 import { LoginRequest, LoginResponse } from "./model/login.model";
 import { ErrorCode, NotificationMessage } from "src/utils/app.util";
 import { ArtisanApiResponse } from "src/model/app.response.model";
-import { VisitorRequest } from "src/model/app.request.model";
+import {
+  AccountActivationRequest,
+  VisitorRequest,
+} from "src/model/app.request.model";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model, ObjectId } from "mongoose";
+import { Model } from "mongoose";
 import { Category, Contacts } from "src/model/contact.schema";
 import { Guests } from "src/model/guest.schema";
 import { DuplicateResourceException } from "src/filters/app.custom.exception";
 import { DEFAULT_PAGE, DEFAULT_SIZE } from "src/utils/constants";
+import { AuthService } from "src/auth/auth.service";
 
 @Injectable()
 export class EntranceService {
   constructor(
+    private authService: AuthService,
     @InjectModel(Guests.name) private guestsModel: Model<Guests>,
     @InjectModel(Contacts.name) private contactsModel: Model<Contacts>
   ) {}
 
+  async activateAccount(
+    payload: AccountActivationRequest
+  ): Promise<ArtisanApiResponse> {
+    return await this.authService.activateAccount(payload);
+  }
   async login(login: LoginRequest): Promise<ArtisanApiResponse> {
-    return new ArtisanApiResponse(
-      new LoginResponse("admin", "test", "test", "Oyejide", "Odofin"),
-      NotificationMessage.SUCCESS_STATUS,
-      ErrorCode.HTTP_200
-    );
+   return await this.authService.validateLoginUser(login);
   }
   async checkDuplicate({ email, phone, willIdReturn }): Promise<Contacts> {
     // Check if a contact with the same email or phone already exists
@@ -35,8 +41,8 @@ export class EntranceService {
       throw new DuplicateResourceException(
         NotificationMessage.DUPLICATE_ACCOUNT
       );
-    }else{
-      return existingContact
+    } else {
+      return existingContact;
     }
   }
   public async createContact({
@@ -73,7 +79,7 @@ export class EntranceService {
   async createVisitRequest(
     visitorRequest: VisitorRequest
   ): Promise<ArtisanApiResponse> {
-    await this.checkDuplicate({...visitorRequest,willIdReturn:false});
+    await this.checkDuplicate({ ...visitorRequest, willIdReturn: false });
     // Create a new contact
     const savedContact = await this.createContact({
       ...visitorRequest,

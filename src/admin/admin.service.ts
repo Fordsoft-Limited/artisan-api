@@ -1,9 +1,16 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { AuthService } from "src/auth/auth.service";
 import { EntranceService } from "src/entrance/entrance.service";
-import { DuplicateResourceException, RecordNotFoundException } from "src/filters/app.custom.exception";
-import { AccountActivationRequest, UserInvitationRequest } from "src/model/app.request.model";
+import {
+  DuplicateResourceException,
+  RecordNotFoundException,
+} from "src/filters/app.custom.exception";
+import {
+  AccountActivationRequest,
+  UserInvitationRequest,
+} from "src/model/app.request.model";
 import { ArtisanApiResponse } from "src/model/app.response.model";
 import { Category } from "src/model/contact.schema";
 import { User } from "src/model/user.schema";
@@ -18,27 +25,19 @@ export class AdminService {
     @InjectModel(User.name) private userModel: Model<User>
   ) {}
 
-  async activateAccount(payload: AccountActivationRequest): Promise<ArtisanApiResponse>{
-    const existingUser = await this.userModel.findOne({invitationCode: payload.invitationCode})
-    if(!existingUser)
-    throw new RecordNotFoundException(NotificationMessage.RECORD_NOT_FOUND)
-  
-  console.log("Activation completed, Password has now been set")
-    return new ArtisanApiResponse(
-      NotificationMessage.INVITATION_SENT,
-      NotificationMessage.SUCCESS_STATUS,
-      ErrorCode.HTTP_200
-    );
-  }
+ 
   async checkDuplicateUsername(
     userRequest: UserInvitationRequest
   ): Promise<void> {
-    await this.entranceService.checkDuplicate({...userRequest, willIdReturn:false});
+    await this.entranceService.checkDuplicate({
+      ...userRequest,
+      willIdReturn: false,
+    });
     const existingUser = await this.userModel.findOne({
       username: userRequest.email,
     });
-    if (existingUser){
-      console.log("This user really existsin in our database",existingUser)
+    if (existingUser) {
+      console.log("This user really existsin in our database", existingUser);
       throw new DuplicateResourceException(
         NotificationMessage.DUPLICATE_ACCOUNT
       );

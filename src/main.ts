@@ -1,6 +1,6 @@
-import { NestFactory } from "@nestjs/core";
+import { NestFactory, Reflector } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { ValidationPipe } from "@nestjs/common";
+import { ClassSerializerInterceptor, ValidationPipe } from "@nestjs/common";
 import { ValidationError } from "class-validator";
 import { FallbackExceptionFilter } from "./filters/fallback.filter";
 import { HttpExceptionFilter } from "./filters/http.filter";
@@ -25,7 +25,7 @@ async function bootstrap() {
     new HttpExceptionFilter(),
     new ValidationFilter()
   );
-
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.useGlobalPipes(
     new ValidationPipe({
       skipMissingProperties: false,

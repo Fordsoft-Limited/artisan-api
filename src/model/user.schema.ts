@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Exclude } from 'class-transformer';
 import { Document, Types } from 'mongoose';
 
 @Schema({ timestamps: true })
@@ -7,6 +8,7 @@ export class User extends Document {
   username: string;
 
   @Prop()
+  @Exclude({ toPlainOnly: true })
   password: string;
 
   @Prop({ type: Types.ObjectId, ref: 'Contacts', select: '_id name phone email' })
@@ -29,3 +31,7 @@ export class User extends Document {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+function Expose(): (target: User, propertyKey: "username") => void {
+  throw new Error('Function not implemented.');
+}
+
