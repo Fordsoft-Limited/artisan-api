@@ -13,6 +13,7 @@ import {
 } from "src/model/app.response.model";
 import { User } from "src/model/user.schema";
 import { ErrorCode, NotificationMessage } from "src/utils/app.util";
+import { DEFAULT_PAGE, DEFAULT_SIZE } from "src/utils/constants";
 
 @Injectable()
 export class AuthService {
@@ -82,12 +83,19 @@ export class AuthService {
       this.logger.debug(`Invalid credentials for user ${username}`);
       throw new UnauthorizedException(NotificationMessage.INVALID_USER);
     }
-    return new ArtisanApiResponse({
+    const userResponse =this.maptoUserResponse(user)
+    return new ArtisanApiResponse({...userResponse, 
+      token: this.getTokenForUser(user),
+    },
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
+  }
+  private maptoUserResponse(user: User):any{
+    return {
       isActive: user.isActive,
       isBlocked: user.isBlocked,
       username: user.username,
-
-      token: this.getTokenForUser(user),
       contact: {
         category: user.contact['category'],
         name: user.contact['name'],
@@ -97,7 +105,25 @@ export class AuthService {
         city: user.contact['city'],
         postalCode: user.contact['postalCode']
       },
-    },
+    }
+  }
+  async getPaginatedUsers(
+    page: number = DEFAULT_PAGE,
+    limit: number = DEFAULT_SIZE
+  ): Promise<ArtisanApiResponse> {
+    const skip = (page - 1) * limit;
+
+    const users = await this.userModel
+      .find()
+      .populate({
+        path: "contact",
+      })
+      .skip(skip)
+      .limit(limit)
+      .exec();
+
+    return new ArtisanApiResponse(
+      users.map(user=>this.maptoUserResponse(user)),
       NotificationMessage.SUCCESS_STATUS,
       ErrorCode.HTTP_200
     );

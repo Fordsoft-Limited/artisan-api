@@ -19,12 +19,16 @@ import { ErrorCode, NotificationMessage } from "src/utils/app.util";
 
 @Injectable()
 export class AdminService {
+
   constructor(
+    private autService: AuthService,
     private entranceService: EntranceService,
     private notificationSerivce: NotificationService,
     @InjectModel(User.name) private userModel: Model<User>
   ) {}
-
+  async getPaginatedUsers(page: number, limit: number): Promise<ArtisanApiResponse> {
+    return await this.autService.getPaginatedUsers(page, limit);
+  }
  
   async checkDuplicateUsername(
     userRequest: UserInvitationRequest
