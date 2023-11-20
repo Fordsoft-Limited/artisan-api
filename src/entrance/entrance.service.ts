@@ -7,7 +7,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model, ObjectId } from "mongoose";
 import { Category, Contacts } from "src/model/contact.schema";
 import { Guests } from "src/model/guest.schema";
-import { DuplicateResourceException } from "src/filters/conflict.exception";
+import { DuplicateResourceException } from "src/filters/app.custom.exception";
 import { DEFAULT_PAGE, DEFAULT_SIZE } from "src/utils/constants";
 
 @Injectable()

@@ -6,7 +6,8 @@ import { NotificationModule } from './notification/notification.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MediaModule } from './media/media.module';
 import { ConversationModule } from './conversation/conversation.module';
-import { AppConfig } from './config/app.config';
+import { AuthModule } from './auth/auth.module';
+import { DatabaseModule } from './global/database/database.module';
 import SecretConfig from './config/secret.config'
 @Module({
   imports: [
@@ -16,19 +17,13 @@ import SecretConfig from './config/secret.config'
       expandVariables: true,
       envFilePath: `${process.env.NODE_ENV ?? ''}.env`,
     }),
-    MongooseModule.forRootAsync({
-      useFactory: async (configService: ConfigService) => {
-        const uri = configService.get<string>(AppConfig.MONGO_CONNECTION_ARTISAN);
-        Logger.log(`MongoDB Connection URI: ${uri}`);
-        return { uri };
-      },
-      inject: [ConfigService],
-    }),
+    DatabaseModule,
     EntranceModule,
     AdminModule,
     NotificationModule,
     MediaModule,
-    ConversationModule],
+    ConversationModule,
+    AuthModule],
   providers: []
 })
 export class AppModule {}

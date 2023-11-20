@@ -11,6 +11,7 @@ export class ErrorCode{
 export class NotificationMessage{
     static readonly FAIL_STATUS:string="Fail"
     static readonly SUCCESS_STATUS:string="Success"
+    static readonly UNAUTHORIZED_USER:string="You are not authorized to access this resource"
     static readonly RECORD_NOT_FOUND:string="Record with specified constraints not found"
     static readonly DUPLICATE_ACCOUNT:string="Record with specified email/phone already exists"
     static readonly INVALID_USER:string="Either username/password is incorrect"

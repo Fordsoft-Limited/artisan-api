@@ -92,3 +92,11 @@ export class AdvertisementRequest extends BaseRequest{
   @ApiProperty()
   postalCode: string;
 }
+export class AccountActivationRequest{
+  @ApiProperty()
+  @IsNotEmpty()
+  invitationCode: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  password: string;
+}

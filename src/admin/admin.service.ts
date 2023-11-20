@@ -2,8 +2,8 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { EntranceService } from "src/entrance/entrance.service";
-import { DuplicateResourceException } from "src/filters/conflict.exception";
-import { UserInvitationRequest } from "src/model/app.request.model";
+import { DuplicateResourceException, RecordNotFoundException } from "src/filters/app.custom.exception";
+import { AccountActivationRequest, UserInvitationRequest } from "src/model/app.request.model";
 import { ArtisanApiResponse } from "src/model/app.response.model";
 import { Category } from "src/model/contact.schema";
 import { User } from "src/model/user.schema";
@@ -18,6 +18,18 @@ export class AdminService {
     @InjectModel(User.name) private userModel: Model<User>
   ) {}
 
+  async activateAccount(payload: AccountActivationRequest): Promise<ArtisanApiResponse>{
+    const existingUser = await this.userModel.findOne({invitationCode: payload.invitationCode})
+    if(!existingUser)
+    throw new RecordNotFoundException(NotificationMessage.RECORD_NOT_FOUND)
+  
+  console.log("Activation completed, Password has now been set")
+    return new ArtisanApiResponse(
+      NotificationMessage.INVITATION_SENT,
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
+  }
   async checkDuplicateUsername(
     userRequest: UserInvitationRequest
   ): Promise<void> {
