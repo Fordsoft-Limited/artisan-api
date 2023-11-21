@@ -5,7 +5,6 @@ import { AuthService } from "src/auth/auth.service";
 import { EntranceService } from "src/entrance/entrance.service";
 import {
   DuplicateResourceException,
-  RecordNotFoundException,
 } from "src/filters/app.custom.exception";
 import {
   AccountActivationRequest,
@@ -41,7 +40,6 @@ export class AdminService {
       username: userRequest.email,
     });
     if (existingUser) {
-      console.log("This user really existsin in our database", existingUser);
       throw new DuplicateResourceException(
         NotificationMessage.DUPLICATE_ACCOUNT
       );
