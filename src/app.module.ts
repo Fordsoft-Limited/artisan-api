@@ -1,9 +1,8 @@
-import { Logger, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { EntranceModule } from './entrance/entrance.module';
-import { MongooseModule } from '@nestjs/mongoose';
 import { AdminModule } from './admin/admin.module';
 import { NotificationModule } from './notification/notification.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { MediaModule } from './media/media.module';
 import { ConversationModule } from './conversation/conversation.module';
 import { AuthModule } from './auth/auth.module';

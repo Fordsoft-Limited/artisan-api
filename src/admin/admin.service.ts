@@ -7,7 +7,6 @@ import {
   DuplicateResourceException,
 } from "src/filters/app.custom.exception";
 import {
-  AccountActivationRequest,
   UserInvitationRequest,
 } from "src/model/app.request.model";
 import { ArtisanApiResponse } from "src/model/app.response.model";
