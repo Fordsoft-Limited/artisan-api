@@ -1,7 +1,7 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { EntranceController } from './entrance.controller';
 import { EntranceService } from './entrance.service';
-
+@Global()
 @Module({
   imports: [
   ],
