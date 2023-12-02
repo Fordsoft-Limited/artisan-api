@@ -13,13 +13,14 @@ import { Guests } from "src/model/guest.schema";
 import { DuplicateResourceException } from "src/filters/app.custom.exception";
 import { DEFAULT_PAGE, DEFAULT_SIZE } from "src/utils/constants";
 import { AuthService } from "src/auth/auth.service";
+import { Advertisement } from "src/model/advertisement.schema";
 
 @Injectable()
 export class EntranceService {
   constructor(
     private authService: AuthService,
     @InjectModel(Guests.name) private guestsModel: Model<Guests>,
-    @InjectModel(Contacts.name) private contactsModel: Model<Contacts>
+    @InjectModel(Contacts.name) private contactsModel: Model<Contacts>,
   ) {}
 
   async activateAccount(
@@ -124,4 +125,6 @@ export class EntranceService {
       ErrorCode.HTTP_200
     );
   }
+
+  
 }

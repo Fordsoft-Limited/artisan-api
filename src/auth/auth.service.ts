@@ -6,6 +6,7 @@ import { plainToClass } from "class-transformer";
 import { Model } from "mongoose";
 import { LoginRequest } from "src/entrance/model/login.model";
 import { RecordNotFoundException } from "src/filters/app.custom.exception";
+import { Advertisement } from "src/model/advertisement.schema";
 import { AccountActivationRequest } from "src/model/app.request.model";
 import {
   ArtisanApiResponse,
@@ -21,7 +22,8 @@ export class AuthService {
 
   constructor(
     private readonly jwtService: JwtService,
-    @InjectModel(User.name) private userModel: Model<User>
+    @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Advertisement.name) private advertModel: Model<Advertisement>
   ) {}
 
   public getTokenForUser(user: User): string {
@@ -91,6 +93,24 @@ export class AuthService {
       ErrorCode.HTTP_200
     );
   }
+  private mapToAdvertisementResponse(advertisement: Advertisement):any{
+    return {
+      category: advertisement.category,
+      description: advertisement. description,
+      businessName: advertisement.businessName,
+      websiteLink: advertisement.websiteLink,
+      contact: {
+        category: advertisement.contact['category'],
+        name: advertisement.contact['name'],
+        phone: advertisement.contact['phone'],
+        email: advertisement.contact['email'],
+        street: advertisement.contact['street'],
+        city: advertisement.contact['city'],
+        postalCode: advertisement.contact['postalCode']
+      },
+    }
+  }
+
   private maptoUserResponse(user: User):any{
     return {
       isActive: user.isActive,
@@ -107,6 +127,31 @@ export class AuthService {
       },
     }
   }
+ async listPaginatedAdvertisement(
+    page: number = DEFAULT_PAGE,
+    limit: number = DEFAULT_SIZE
+  ): Promise<ArtisanApiResponse> {
+    const skip = (page - 1) * limit;
+
+    const advertisement = await this.advertModel
+      .find()
+      .populate({
+        path: "contact",
+      })
+      .skip(skip)
+      .limit(limit)
+      .exec();
+
+    return new ArtisanApiResponse(
+      advertisement.map(advertisement=>this.mapToAdvertisementResponse(advertisement)),
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
+  }
+
+
+
+
   async getPaginatedUsers(
     page: number = DEFAULT_PAGE,
     limit: number = DEFAULT_SIZE

@@ -27,6 +27,10 @@ export class AdminService {
   async getPaginatedUsers(page: number, limit: number): Promise<ArtisanApiResponse> {
     return await this.autService.getPaginatedUsers(page, limit);
   }
+
+  async getPaginatedAdvertisement(page: number, limit: number): Promise<ArtisanApiResponse> {
+    return await this.autService.listPaginatedAdvertisement(page, limit);
+  }
  
   async checkDuplicateUsername(
     userRequest: UserInvitationRequest
