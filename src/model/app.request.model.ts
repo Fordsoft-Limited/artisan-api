@@ -92,6 +92,8 @@ export class AdvertisementRequest extends BaseRequest{
   @ApiProperty()
   postalCode: string;
 }
+
+
 export class AccountActivationRequest{
   @ApiProperty()
   @IsNotEmpty()

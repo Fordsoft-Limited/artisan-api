@@ -20,4 +20,5 @@ export class NotificationMessage{
     static readonly VISITOR_FORM_SUBMITTED:string="Great! You have successfully submitted your visitation form. We will get in touch with you soon."
     static readonly INVITATION_SENT:string="Great! invitation successfully sent to the user"
     static readonly ACCOUNT_ACTIVATED:string="Great! Account successfully activated"
+    static readonly ADVERTISEMENT_SAVED:string= "Advertisement success"
 }

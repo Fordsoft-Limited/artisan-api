@@ -5,10 +5,13 @@ import * as bcrypt from "bcrypt";
 import { Model } from "mongoose";
 import { LoginRequest } from "src/entrance/model/login.model";
 import { RecordNotFoundException } from "src/filters/app.custom.exception";
+import { Mapper } from "src/mapper/dto.mapper";
+import { Advertisement } from "src/model/advertisement.schema";
 import { AccountActivationRequest } from "src/model/app.request.model";
 import {
   ArtisanApiResponse,
 } from "src/model/app.response.model";
+import { Guests } from "src/model/guest.schema";
 import { User } from "src/model/user.schema";
 import { ErrorCode, NotificationMessage } from "src/utils/app.util";
 import { DEFAULT_PAGE, DEFAULT_SIZE } from "src/utils/constants";
@@ -19,7 +22,8 @@ export class AuthService {
 
   constructor(
     private readonly jwtService: JwtService,
-    @InjectModel(User.name) private userModel: Model<User>
+    @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Guests.name) private guestsModel: Model<Guests>,
   ) {}
 
   public getTokenForUser(user: User): string {
@@ -82,7 +86,7 @@ export class AuthService {
       this.logger.debug(`Invalid credentials for user ${username}`);
       throw new UnauthorizedException(NotificationMessage.INVALID_USER);
     }
-    const userResponse =this.maptoUserResponse(user)
+    const userResponse =Mapper.mapToUserResponse(user)
     return new ArtisanApiResponse({...userResponse, 
       token: this.getTokenForUser(user),
     },
@@ -90,21 +94,26 @@ export class AuthService {
       ErrorCode.HTTP_200
     );
   }
-  private maptoUserResponse(user: User):any{
-    return {
-      isActive: user.isActive,
-      isBlocked: user.isBlocked,
-      username: user.username,
-      contact: {
-        category: user.contact['category'],
-        name: user.contact['name'],
-        phone: user.contact['phone'],
-        email: user.contact['email'],
-        street: user.contact['street'],
-        city: user.contact['city'],
-        postalCode: user.contact['postalCode']
-      },
-    }
+  async getPaginatedVisitors(
+    page: number = DEFAULT_PAGE,
+    limit: number = DEFAULT_SIZE
+  ): Promise<ArtisanApiResponse> {
+    const skip = (page - 1) * limit;
+
+    const visitors = await this.guestsModel
+      .find()
+      .populate({
+        path: "contact",
+      })
+      .skip(skip)
+      .limit(limit)
+      .exec();
+
+    return new ArtisanApiResponse(
+      visitors,
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
   }
   async getPaginatedUsers(
     page: number = DEFAULT_PAGE,
@@ -122,7 +131,7 @@ export class AuthService {
       .exec();
 
     return new ArtisanApiResponse(
-      users.map(user=>this.maptoUserResponse(user)),
+      users.map(user=>Mapper.mapToUserResponse(user)),
       NotificationMessage.SUCCESS_STATUS,
       ErrorCode.HTTP_200
     );
