@@ -2,14 +2,12 @@ import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectModel } from "@nestjs/mongoose";
 import * as bcrypt from "bcrypt";
-import { plainToClass } from "class-transformer";
 import { Model } from "mongoose";
 import { LoginRequest } from "src/entrance/model/login.model";
 import { RecordNotFoundException } from "src/filters/app.custom.exception";
 import { AccountActivationRequest } from "src/model/app.request.model";
 import {
   ArtisanApiResponse,
-  LoginResponse,
 } from "src/model/app.response.model";
 import { User } from "src/model/user.schema";
 import { ErrorCode, NotificationMessage } from "src/utils/app.util";
@@ -27,6 +25,7 @@ export class AuthService {
   public getTokenForUser(user: User): string {
     return this.jwtService.sign({
       username: user.username,
+      roles: user.roles,
       sub: user._id,
     });
   }

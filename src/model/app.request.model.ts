@@ -1,6 +1,6 @@
 import { ContactMethod } from "./guest.schema";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsNotEmpty } from "class-validator";
+import { IsEmail, IsNotEmpty, IsObject, IsOptional, IsString } from "class-validator";
 import { IsPhoneNumber } from "../validators/phone-validation.decorator";
 
 export class BaseRequest {
@@ -99,4 +99,18 @@ export class AccountActivationRequest{
   @ApiProperty()
   @IsNotEmpty()
   password: string;
+}
+
+export class BlogCreateRequest{
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  title: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  description: string;
+  @IsOptional()
+  @IsObject()
+  file: Express.Multer.File;
 }

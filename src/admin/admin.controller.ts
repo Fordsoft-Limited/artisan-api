@@ -1,11 +1,13 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
 import { ArtisanApiResponse } from "src/model/app.response.model";
 import { AdminService } from "./admin.service";
 import { UserInvitationRequest } from "src/model/app.request.model";
-import { ApiParam, ApiTags } from "@nestjs/swagger";
+import { ApiTags } from "@nestjs/swagger";
 import { ApiPath } from "src/utils/path.param";
+import { AuthenticationGuard } from "src/guards/authentication.guard";
 @ApiTags("admin")
 @Controller("admin")
+@UseGuards(AuthenticationGuard)
 export class AdminController {
   constructor(private adminService: AdminService) {}
 

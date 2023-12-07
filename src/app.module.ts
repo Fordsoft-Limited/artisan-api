@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { EntranceModule } from './entrance/entrance.module';
 import { AdminModule } from './admin/admin.module';
 import { NotificationModule } from './notification/notification.module';
@@ -8,6 +8,9 @@ import { ConversationModule } from './conversation/conversation.module';
 import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './global/database/database.module';
 import SecretConfig from './config/secret.config'
+import { AdminController } from './admin/admin.controller';
+import { GetUserMiddleware } from './middleware/get-user.middleware';
+import { ConversationController } from './conversation/conversation.controller';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,4 +28,15 @@ import SecretConfig from './config/secret.config'
     AuthModule],
   providers: []
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+
+    consumer
+        .apply(GetUserMiddleware)
+        .forRoutes(
+            ConversationController,
+            AdminController
+        );
+
+}
+}
