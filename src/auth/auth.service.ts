@@ -2,16 +2,16 @@ import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectModel } from "@nestjs/mongoose";
 import * as bcrypt from "bcrypt";
-import { plainToClass } from "class-transformer";
 import { Model } from "mongoose";
 import { LoginRequest } from "src/entrance/model/login.model";
 import { RecordNotFoundException } from "src/filters/app.custom.exception";
+import { Mapper } from "src/mapper/dto.mapper";
 import { Advertisement } from "src/model/advertisement.schema";
 import { AccountActivationRequest } from "src/model/app.request.model";
 import {
   ArtisanApiResponse,
-  LoginResponse,
 } from "src/model/app.response.model";
+import { Guests } from "src/model/guest.schema";
 import { User } from "src/model/user.schema";
 import { ErrorCode, NotificationMessage } from "src/utils/app.util";
 import { DEFAULT_PAGE, DEFAULT_SIZE } from "src/utils/constants";
@@ -23,12 +23,13 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     @InjectModel(User.name) private userModel: Model<User>,
-    @InjectModel(Advertisement.name) private advertModel: Model<Advertisement>
+    @InjectModel(Guests.name) private guestsModel: Model<Guests>,
   ) {}
 
   public getTokenForUser(user: User): string {
     return this.jwtService.sign({
       username: user.username,
+      roles: user.roles,
       sub: user._id,
     });
   }
@@ -85,7 +86,7 @@ export class AuthService {
       this.logger.debug(`Invalid credentials for user ${username}`);
       throw new UnauthorizedException(NotificationMessage.INVALID_USER);
     }
-    const userResponse =this.maptoUserResponse(user)
+    const userResponse =Mapper.mapToUserResponse(user)
     return new ArtisanApiResponse({...userResponse, 
       token: this.getTokenForUser(user),
     },
@@ -93,47 +94,13 @@ export class AuthService {
       ErrorCode.HTTP_200
     );
   }
-  private mapToAdvertisementResponse(advertisement: Advertisement):any{
-    return {
-      category: advertisement.category,
-      description: advertisement. description,
-      businessName: advertisement.businessName,
-      websiteLink: advertisement.websiteLink,
-      contact: {
-        category: advertisement.contact['category'],
-        name: advertisement.contact['name'],
-        phone: advertisement.contact['phone'],
-        email: advertisement.contact['email'],
-        street: advertisement.contact['street'],
-        city: advertisement.contact['city'],
-        postalCode: advertisement.contact['postalCode']
-      },
-    }
-  }
-
-  private maptoUserResponse(user: User):any{
-    return {
-      isActive: user.isActive,
-      isBlocked: user.isBlocked,
-      username: user.username,
-      contact: {
-        category: user.contact['category'],
-        name: user.contact['name'],
-        phone: user.contact['phone'],
-        email: user.contact['email'],
-        street: user.contact['street'],
-        city: user.contact['city'],
-        postalCode: user.contact['postalCode']
-      },
-    }
-  }
- async listPaginatedAdvertisement(
+  async getPaginatedVisitors(
     page: number = DEFAULT_PAGE,
     limit: number = DEFAULT_SIZE
   ): Promise<ArtisanApiResponse> {
     const skip = (page - 1) * limit;
 
-    const advertisement = await this.advertModel
+    const visitors = await this.guestsModel
       .find()
       .populate({
         path: "contact",
@@ -143,15 +110,11 @@ export class AuthService {
       .exec();
 
     return new ArtisanApiResponse(
-      advertisement.map(advertisement=>this.mapToAdvertisementResponse(advertisement)),
+      visitors,
       NotificationMessage.SUCCESS_STATUS,
       ErrorCode.HTTP_200
     );
   }
-
-
-
-
   async getPaginatedUsers(
     page: number = DEFAULT_PAGE,
     limit: number = DEFAULT_SIZE
@@ -168,7 +131,7 @@ export class AuthService {
       .exec();
 
     return new ArtisanApiResponse(
-      users.map(user=>this.maptoUserResponse(user)),
+      users.map(user=>Mapper.mapToUserResponse(user)),
       NotificationMessage.SUCCESS_STATUS,
       ErrorCode.HTTP_200
     );

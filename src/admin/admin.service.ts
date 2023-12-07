@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { AuthService } from "src/auth/auth.service";
@@ -26,10 +26,6 @@ export class AdminService {
   ) {}
   async getPaginatedUsers(page: number, limit: number): Promise<ArtisanApiResponse> {
     return await this.autService.getPaginatedUsers(page, limit);
-  }
-
-  async getPaginatedAdvertisement(page: number, limit: number): Promise<ArtisanApiResponse> {
-    return await this.autService.listPaginatedAdvertisement(page, limit);
   }
  
   async checkDuplicateUsername(
@@ -77,9 +73,8 @@ export class AdminService {
   }
   async getPaginatedVisitors(
     page: number,
-
     limit: number
   ): Promise<ArtisanApiResponse> {
-    return this.entranceService.getPaginatedVisitors(page, limit);
+    return this.autService.getPaginatedVisitors(page, limit);
   }
 }

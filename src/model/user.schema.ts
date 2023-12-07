@@ -25,6 +25,8 @@ export class User extends Document {
 
   @Prop()
   invitationCode: string;
+  @Prop()
+  roles: string[]
 
   @Prop({ type: Types.ObjectId, ref: 'User', select: '_id username' })
   createdBy: Types.ObjectId;
