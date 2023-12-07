@@ -46,7 +46,7 @@ export class EntranceService {
       return existingContact;
     }
   }
-  public async createContact({
+  public async createContact({ 
     category,
     name,
     phone,
@@ -104,27 +104,7 @@ export class EntranceService {
       ErrorCode.HTTP_200
     );
   }
-  async getPaginatedVisitors(
-    page: number = DEFAULT_PAGE,
-    limit: number = DEFAULT_SIZE
-  ): Promise<ArtisanApiResponse> {
-    const skip = (page - 1) * limit;
-
-    const visitors = await this.guestsModel
-      .find()
-      .populate({
-        path: "contact",
-      })
-      .skip(skip)
-      .limit(limit)
-      .exec();
-
-    return new ArtisanApiResponse(
-      visitors,
-      NotificationMessage.SUCCESS_STATUS,
-      ErrorCode.HTTP_200
-    );
-  }
+  
 
   
 }
