@@ -1,4 +1,5 @@
 import { Advertisement } from "src/model/advertisement.schema";
+import { Blogs } from "src/model/blog.schema";
 import { User } from "src/model/user.schema";
 
 export class Mapper {
@@ -20,7 +21,7 @@ export class Mapper {
         contact: this.mapToContactResponse(user.contact),
       };
     }
-  
+
      static mapToContactResponse(contact: any): any {
       return {
         category: contact.category,
@@ -30,6 +31,14 @@ export class Mapper {
         street: contact.street,
         city: contact.city,
         postalCode: contact.postalCode,
+      };
+    }
+
+    static mapToBlogResponse(blog: Blogs): any {
+      return {
+        description: blog.description,
+        title: blog.title,
+        user: this.mapToContactResponse(blog.author),
       };
     }
   }

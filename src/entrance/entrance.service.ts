@@ -11,9 +11,7 @@ import { Model } from "mongoose";
 import { Category, Contacts } from "src/model/contact.schema";
 import { Guests } from "src/model/guest.schema";
 import { DuplicateResourceException } from "src/filters/app.custom.exception";
-import { DEFAULT_PAGE, DEFAULT_SIZE } from "src/utils/constants";
 import { AuthService } from "src/auth/auth.service";
-import { Advertisement } from "src/model/advertisement.schema";
 
 @Injectable()
 export class EntranceService {

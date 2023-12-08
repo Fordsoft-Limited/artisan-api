@@ -8,5 +8,5 @@ export default () => ({
     jwtSecret: process.env.JWT_SECRET,
     appSalt: process.env.APP_SALT||10
   });
-  console.log(process.env.MONGO_CONNECTION_ARTISAN, "hjjkkkkkkkkkkkkk")
+  // console.log(process.env.MONGO_CONNECTION_ARTISAN)
   

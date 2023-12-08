@@ -11,6 +11,7 @@ import SecretConfig from './config/secret.config'
 import { AdminController } from './admin/admin.controller';
 import { GetUserMiddleware } from './middleware/get-user.middleware';
 import { ConversationController } from './conversation/conversation.controller';
+import { JwtService } from '@nestjs/jwt';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -26,7 +27,7 @@ import { ConversationController } from './conversation/conversation.controller';
     MediaModule,
     ConversationModule,
     AuthModule],
-  providers: []
+  providers: [JwtService]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {
