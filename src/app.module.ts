@@ -10,7 +10,7 @@ import { DatabaseModule } from './global/database/database.module';
 import SecretConfig from './config/secret.config'
 import { AdminController } from './admin/admin.controller';
 import { GetUserMiddleware } from './middleware/get-user.middleware';
-import { ConversationController } from './conversation/conversation.controller';
+import { ConversationController } from './conversation/ConversationController';
 @Module({
   imports: [
     ConfigModule.forRoot({
