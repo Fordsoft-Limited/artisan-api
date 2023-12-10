@@ -1,6 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 @Global()
 @Module({
   imports:[
@@ -13,7 +13,7 @@ import { JwtModule } from '@nestjs/jwt';
       }),
     }),
   ],
-  providers: [AuthService],
-  exports: [AuthService]
+  providers: [AuthService,JwtService],
+  exports: [AuthService, JwtService]
 })
 export class AuthModule {}
