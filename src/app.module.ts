@@ -12,8 +12,10 @@ import { AdminController } from './admin/admin.controller';
 import { GetUserMiddleware } from './middleware/get-user.middleware';
 import { ConversationController } from './conversation/conversation.controller';
 import { JwtService } from '@nestjs/jwt';
+import { UploadsModule } from './uploads/uploads.module';
 @Module({
   imports: [
+    UploadsModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load:[SecretConfig],
@@ -26,7 +28,8 @@ import { JwtService } from '@nestjs/jwt';
     NotificationModule,
     MediaModule,
     ConversationModule,
-    AuthModule],
+    AuthModule,
+    UploadsModule],
   providers: [JwtService]
 })
 export class AppModule implements NestModule {
