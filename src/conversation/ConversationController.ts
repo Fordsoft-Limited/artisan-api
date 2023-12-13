@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { AdvertisementRequest } from 'src/model/app.request.model';
+import { AdvertisementRequest, BlogCreateRequest } from 'src/model/app.request.model';
 import { ArtisanApiResponse } from 'src/model/app.response.model';
 import { ConversationService } from './conversation.service';
 import { ApiPath } from 'src/utils/path.param';
@@ -26,6 +26,19 @@ export class ConversationController {
     return await this.conversationService.listPaginatedAdvertisement(page, limit);
   }
 
-    
+   @Post("/blogs")
+    async addNewBlog(@Body() payload: BlogCreateRequest): Promise<ArtisanApiResponse> {
+        return await this.conversationService.addNewBlog(payload);
+    }
+
+    @Get("blog")
+    async listPaginatedBlog(
+    @Param(ApiPath.PAGE_PARA)
+    page: number,
+    @Param(ApiPath.LIMIT_PARAM)
+    limit: number
+  ): Promise<ArtisanApiResponse> {
+    return await this.conversationService.listPaginatedBlog(page, limit);
+  }
    
 }

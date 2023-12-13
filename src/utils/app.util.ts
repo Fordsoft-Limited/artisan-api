@@ -21,4 +21,6 @@ export class NotificationMessage{
     static readonly INVITATION_SENT:string="Great! invitation successfully sent to the user"
     static readonly ACCOUNT_ACTIVATED:string="Great! Account successfully activated"
     static readonly ADVERTISEMENT_SAVED:string= "Advertisement success"
+        static readonly BLOG_SAVED:string= "Blog success"
+
 }

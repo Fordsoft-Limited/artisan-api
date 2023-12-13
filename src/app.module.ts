@@ -11,6 +11,7 @@ import SecretConfig from './config/secret.config'
 import { AdminController } from './admin/admin.controller';
 import { GetUserMiddleware } from './middleware/get-user.middleware';
 import { ConversationController } from './conversation/ConversationController';
+import { UploadModule } from './upload/upload.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,7 +26,8 @@ import { ConversationController } from './conversation/ConversationController';
     NotificationModule,
     MediaModule,
     ConversationModule,
-    AuthModule],
+    AuthModule,
+    UploadModule],
   providers: []
 })
 export class AppModule implements NestModule {
