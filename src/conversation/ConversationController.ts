@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AdvertisementRequest, BlogCreateRequest } from 'src/model/app.request.model';
 import { ArtisanApiResponse } from 'src/model/app.response.model';
@@ -40,5 +40,14 @@ export class ConversationController {
   ): Promise<ArtisanApiResponse> {
     return await this.conversationService.listPaginatedBlog(page, limit);
   }
+
+
+  @Put('advertisement/:id')
+  async updateAdvertisement(@Param('id')
+   id: string,
+   @Body()
+   payload: AdvertisementRequest): Promise<ArtisanApiResponse>{
+    return this.conversationService.updateAdvertisement(id, payload)
+   }
    
 }

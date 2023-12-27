@@ -116,3 +116,14 @@ export class BlogCreateRequest{
   @IsObject()
   file: Express.Multer.File;
 }
+
+export class MadiaRequest{
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  fileName: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  fileType: string;
+}

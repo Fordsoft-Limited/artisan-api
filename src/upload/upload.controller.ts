@@ -1,23 +1,37 @@
-import { Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { multerConfig } from 'src/multer/multer.config';
+import { ApiTags } from '@nestjs/swagger';
+import { UploadService } from './upload.service';
+import { ArtisanApiResponse } from 'src/model/app.response.model';
+import { ApiPath } from 'src/utils/path.param';
 
 @ApiTags('File Upload')
 @Controller('upload')
 export class UploadController {
-  @Post('/file')
-  @ApiOperation({ summary: 'Upload a file' })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    description: 'File',
-    type: 'object',
-  })
-  @ApiResponse({ status: 200, description: 'File uploaded successfully' })
-  @UseInterceptors(FileInterceptor('file', multerConfig))
-  async uploadFile(@UploadedFile() file) {
-    // Handle the uploaded file, e.g., save its information to a database
-    console.log(file);
-    return { message: 'File uploaded successfully' };
-  }
+
+  constructor (
+    private uploadMedia: UploadService
+  ){}
+
+@Post('upload')
+@UseInterceptors(FileInterceptor('file'))
+async saveUploadMedia(
+  @UploadedFile() file,
+  @Body('fileName') fileName: string,
+  @Body('fileType') fileType: string
+): Promise<ArtisanApiResponse> {
+const fileUrl = file && file.filename ? 'https://your-file-storage.com/' + file.filename : '';
+  return await this.uploadMedia.saveUploadMedia(fileUrl, fileName, fileType);
+}
+
+@Get("/fetch_media")
+async listPaginatedMedia(
+@Param(ApiPath.PAGE_PARA)
+page: number,
+@Param(ApiPath.LIMIT_PARAM)
+limit: number
+): Promise<ArtisanApiResponse> {
+  return await this.uploadMedia.listPaginatedMedia(page, limit);
+} 
+  
 }

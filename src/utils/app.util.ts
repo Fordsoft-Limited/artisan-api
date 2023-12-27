@@ -13,7 +13,7 @@ export class NotificationMessage{
     static readonly SUCCESS_STATUS:string="Success"
     static readonly UNAUTHORIZED_USER:string="You are not authorized to access this resource"
     static readonly RECORD_NOT_FOUND:string="Record with specified constraints not found"
-
+    static readonly ERROR_SAVING_MEDIA:string="Error saving media URL"
     static readonly INVALID_ACTIVATION_CODE:string="Activation code not valid or have been previously used"
     static readonly DUPLICATE_ACCOUNT:string="Record with specified email/phone already exists"
     static readonly INVALID_USER:string="Either username/password is incorrect"
@@ -21,6 +21,10 @@ export class NotificationMessage{
     static readonly INVITATION_SENT:string="Great! invitation successfully sent to the user"
     static readonly ACCOUNT_ACTIVATED:string="Great! Account successfully activated"
     static readonly ADVERTISEMENT_SAVED:string= "Advertisement success"
-        static readonly BLOG_SAVED:string= "Blog success"
+    static readonly BLOG_SAVED:string= "Blog success"
+    static readonly Media_SAVED:string= "Upload successfully"
+    static readonly UPDATE_ADVERTISEMENT:string= "Advertisement update successfully"
+    
+
 
 }

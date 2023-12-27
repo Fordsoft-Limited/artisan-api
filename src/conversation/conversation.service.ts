@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { EntranceService } from "src/entrance/entrance.service";
+import { RecordNotFoundException } from "src/filters/app.custom.exception";
 import { Mapper } from "src/mapper/dto.mapper";
 import { Advertisement } from "src/model/advertisement.schema";
 import { AdvertisementRequest, BlogCreateRequest } from "src/model/app.request.model";
@@ -108,5 +109,28 @@ export class ConversationService {
       ErrorCode.HTTP_200
     );
   }
+
+
+  async updateAdvertisement(id: string, payload: AdvertisementRequest): Promise<ArtisanApiResponse> {
+    // Use findByIdAndUpdate to update the document and get the modified document
+  const updatedAdvertisement = await this.advertisementModel.findByIdAndUpdate(id, payload, {
+    new: true,  // Return the modified document
+    runValidators: true  // Run validation on the update
+  });
+
+  if (!updatedAdvertisement) {
+      // Handle case when the user with the provided ID is not found
+      throw new RecordNotFoundException(
+        NotificationMessage.RECORD_NOT_FOUND
+      );
+    }
+
+  return new ArtisanApiResponse(
+    NotificationMessage.UPDATE_ADVERTISEMENT,
+    NotificationMessage.SUCCESS_STATUS,
+    ErrorCode.HTTP_200
+  );
+  }
+
 
 }
