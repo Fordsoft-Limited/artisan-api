@@ -14,12 +14,11 @@ export class Advertisement extends Document {
 
   @Prop()
   businessName: string;
+  @Prop()
+  fileName: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'Contact' })
+  @Prop({ type: Types.ObjectId, ref: 'Contacts' })
   contact: Types.ObjectId;
-  
-  @Prop({ type: Types.ObjectId, ref: 'Media' })
-  media: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'User' })
   createdBy: Types.ObjectId;

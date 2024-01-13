@@ -7,6 +7,7 @@ import { Advertisement } from "src/model/advertisement.schema";
 import { AdvertisementRequest } from "src/model/app.request.model";
 import { ArtisanApiResponse } from "src/model/app.response.model";
 import { Category } from "src/model/contact.schema";
+import { UploadService } from "src/upload/upload.service";
 import { NotificationMessage, ErrorCode } from "src/utils/app.util";
 import { DEFAULT_PAGE, DEFAULT_SIZE } from "src/utils/constants";
 
@@ -14,30 +15,32 @@ import { DEFAULT_PAGE, DEFAULT_SIZE } from "src/utils/constants";
 export class ConversationService {
   constructor(
     private entranceService: EntranceService,
+    private fileUploadService: UploadService,
     @InjectModel(Advertisement.name)
     private advertisementModel: Model<Advertisement>
   ) {}
 
-  async addNewAdvertisement(payload: AdvertisementRequest): Promise<ArtisanApiResponse> {
-    // Check for existing contact
+  async addNewAdvertisement(file: Express.Multer.File,data: any): Promise<ArtisanApiResponse> {
+  const payloadData:AdvertisementRequest =JSON.parse(data.payload) as AdvertisementRequest
+    const uploadedFile:string = await this.fileUploadService.uploadFile(file)
     const existingContact = await this.entranceService.checkDuplicate({
-      ...payload,
+      ...payloadData,
       willIdReturn: true,
     });
-  
-    // Create a new Advertisement instance
+     
     const newAdvertisement = new this.advertisementModel({
-      category: payload.category,
-      description: payload.description,
-      businessName: payload.businessName,
-      websiteLink: payload.websiteLink,
+      category: payloadData.category,
+      description: payloadData.description,
+      businessName:payloadData.businessName,
+      websiteLink: payloadData.websiteLink,
+      fileName: uploadedFile
     });
-  
+  console.log("The object to save is:::::::", newAdvertisement)
     // Set the contact based on whether it already exists or not
     newAdvertisement.contact = existingContact
       ? existingContact
       : await this.entranceService.createContact({
-          ...payload,
+          ...payloadData,
           category: Category.Artisan,
         });
   

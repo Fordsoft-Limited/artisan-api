@@ -8,6 +8,7 @@ export class Mapper {
         description: advertisement.description,
         businessName: advertisement.businessName,
         websiteLink: advertisement.websiteLink,
+        fileName: advertisement.fileName,
         contact: this.mapToContactResponse(advertisement.contact),
       };
     }

@@ -9,6 +9,7 @@ export class ErrorCode{
 
 }
 export class NotificationMessage{
+    static readonly FILE_NOT_FOUND:string="The file you specified not found"
     static readonly FAIL_STATUS:string="Fail"
     static readonly SUCCESS_STATUS:string="Success"
     static readonly UNAUTHORIZED_USER:string="You are not authorized to access this resource"
@@ -20,5 +21,5 @@ export class NotificationMessage{
     static readonly VISITOR_FORM_SUBMITTED:string="Great! You have successfully submitted your visitation form. We will get in touch with you soon."
     static readonly INVITATION_SENT:string="Great! invitation successfully sent to the user"
     static readonly ACCOUNT_ACTIVATED:string="Great! Account successfully activated"
-    static readonly ADVERTISEMENT_SAVED:string= "Advertisement success"
+    static readonly ADVERTISEMENT_SAVED:string= "Advertisement successfully saved"
 }
