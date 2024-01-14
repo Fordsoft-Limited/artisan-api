@@ -12,6 +12,7 @@ import { AdminController } from './admin/admin.controller';
 import { GetUserMiddleware } from './middleware/get-user.middleware';
 import { ConversationController } from './conversation/ConversationController';
 import { UploadModule } from './upload/upload.module';
+import { GlobalService } from './global/database/global.service';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -28,7 +29,7 @@ import { UploadModule } from './upload/upload.module';
     ConversationModule,
     AuthModule,
     UploadModule],
-  providers: []
+
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {

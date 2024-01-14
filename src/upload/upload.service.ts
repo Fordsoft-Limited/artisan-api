@@ -11,13 +11,16 @@ import * as uuid from 'uuid';
 export class UploadService {
   
     async uploadFile(file: Express.Multer.File): Promise<string> {
-        const fileId = uuid.v4();
-        const fileName = `${fileId}-${file.originalname}`;
-        const filePath = path.join(FILE_UPLOAD_DIRECTORY, fileName);
-    
-        fs.writeFileSync(filePath, file.buffer);
-    
-        return fileName; 
+        if (!file){
+            return 'NA'; 
+        }
+          const fileId = uuid.v4();
+          const fileName = `${fileId}-${file.originalname}`;
+          const filePath = path.join(FILE_UPLOAD_DIRECTORY, fileName);
+        
+          fs.writeFileSync(filePath, file.buffer);
+        
+          return fileName;
       }
  
 

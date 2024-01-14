@@ -6,8 +6,8 @@ import { ConversationService } from './conversation.service';
 import { ApiPath } from 'src/utils/path.param';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-@ApiTags("Conversation")
-@Controller('conversation')
+@ApiTags("Article")
+@Controller('Article')
 export class ConversationController {
     constructor(private conversationService: ConversationService) { }
 
@@ -32,6 +32,7 @@ export class ConversationController {
     async addNewAdvertisement(@UploadedFile() file, @Body() payload: any): Promise<ArtisanApiResponse> {
         return await this.conversationService.addNewAdvertisement(file,payload);
     }
+
 
 
     @Get("advsertisements")

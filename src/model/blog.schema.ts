@@ -5,7 +5,6 @@ import mongoose, { Document, Types } from 'mongoose';
 @Schema({
   timestamps: true
 })
-
 export class Blogs extends Document{
 
   @Prop()
@@ -17,9 +16,8 @@ export class Blogs extends Document{
   @Prop()
   title: string;
 
-
-  @Prop({ type: Types.ObjectId, ref: 'Media' })
-  media: Types.ObjectId;
+  @Prop()
+  mediaName: string;
 }
 
 export const BlogsSchema = SchemaFactory.createForClass(Blogs)

@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Param, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { ArtisanApiResponse } from "src/model/app.response.model";
 import { AdminService } from "./admin.service";
 import { UserInvitationRequest } from "src/model/app.request.model";
-import { ApiParam, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiConsumes, ApiParam, ApiTags } from "@nestjs/swagger";
 import { ApiPath } from "src/utils/path.param";
+import { FileInterceptor } from "@nestjs/platform-express";
 @ApiTags("admin")
 @Controller("admin")
 export class AdminController {
@@ -33,5 +34,27 @@ export class AdminController {
     invitationRequest: UserInvitationRequest
   ): Promise<ArtisanApiResponse> {
     return await this.adminService.sendInvitationToUser(invitationRequest);
+  }
+
+  @Post("/blogs")
+  @UseInterceptors(FileInterceptor('file'))
+@ApiConsumes('multipart/form-data', 'application/json')
+@ApiBody({
+  schema: {
+    type: 'object',
+    properties: {
+      file: {
+        type: 'string',
+        format: 'binary',
+      },
+      payload: {
+        type: 'object', 
+      },
+    },
+    required: ['payload'], 
+  },
+})
+  async addBlog(@UploadedFile() file, @Body() payload: any): Promise<ArtisanApiResponse> {
+      return await this.adminService.addNewBlog(file,payload);
   }
 }

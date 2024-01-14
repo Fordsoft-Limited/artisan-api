@@ -15,6 +15,7 @@ import { Rating, RatingSchema } from "src/model/rating.schema";
 import { Role, RoleSchema } from "src/model/role.schema";
 import { Setting, SettingSchema } from "src/model/setting.shema";
 import { User, UserSchema } from "src/model/user.schema";
+import { GlobalService } from "./global.service";
 
 @Global()
 @Module({
@@ -41,6 +42,7 @@ import { User, UserSchema } from "src/model/user.schema";
       { name: Role.name, schema: RoleSchema },
     ]),
   ],
-  exports: [MongooseModule],
+  providers: [GlobalService],
+  exports: [MongooseModule, GlobalService],
 })
 export class DatabaseModule {}

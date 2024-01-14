@@ -112,7 +112,4 @@ export class BlogCreateRequest{
   @IsNotEmpty()
   @IsString()
   description: string;
-  @IsOptional()
-  @IsObject()
-  file: Express.Multer.File;
 }

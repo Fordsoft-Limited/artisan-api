@@ -1,11 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { EntranceService } from "src/entrance/entrance.service";
+import { GlobalService } from "src/global/database/global.service";
 import { Mapper } from "src/mapper/dto.mapper";
 import { Advertisement } from "src/model/advertisement.schema";
 import { AdvertisementRequest } from "src/model/app.request.model";
 import { ArtisanApiResponse } from "src/model/app.response.model";
+import { Blogs } from "src/model/blog.schema";
 import { Category } from "src/model/contact.schema";
 import { UploadService } from "src/upload/upload.service";
 import { NotificationMessage, ErrorCode } from "src/utils/app.util";
@@ -14,16 +15,18 @@ import { DEFAULT_PAGE, DEFAULT_SIZE } from "src/utils/constants";
 @Injectable()
 export class ConversationService {
   constructor(
-    private entranceService: EntranceService,
+    private globalService: GlobalService,
     private fileUploadService: UploadService,
     @InjectModel(Advertisement.name)
-    private advertisementModel: Model<Advertisement>
+    private advertisementModel: Model<Advertisement>,
+    @InjectModel(Blogs.name)
+    private blogsModel: Model<Blogs>
   ) {}
-
+  
   async addNewAdvertisement(file: Express.Multer.File,data: any): Promise<ArtisanApiResponse> {
   const payloadData:AdvertisementRequest =JSON.parse(data.payload) as AdvertisementRequest
     const uploadedFile:string = await this.fileUploadService.uploadFile(file)
-    const existingContact = await this.entranceService.checkDuplicate({
+    const existingContact = await this.globalService.checkDuplicate({
       ...payloadData,
       willIdReturn: true,
     });
@@ -35,16 +38,13 @@ export class ConversationService {
       websiteLink: payloadData.websiteLink,
       fileName: uploadedFile
     });
-  console.log("The object to save is:::::::", newAdvertisement)
-    // Set the contact based on whether it already exists or not
     newAdvertisement.contact = existingContact
       ? existingContact
-      : await this.entranceService.createContact({
+      : await this.globalService.createContact({
           ...payloadData,
           category: Category.Artisan,
         });
   
-    // Save the new Advertisement
     await newAdvertisement.save();
   
     return new ArtisanApiResponse(
@@ -75,4 +75,5 @@ export class ConversationService {
       ErrorCode.HTTP_200
     );
   }
+  
 }
