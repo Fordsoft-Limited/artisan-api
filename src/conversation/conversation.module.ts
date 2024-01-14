@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConversationService } from './conversation.service';
 import { ConversationController } from './ConversationController';
-import { EntranceModule } from 'src/entrance/entrance.module';
+import { AdminModule } from 'src/admin/admin.module';
 
 @Module({
-  imports:[EntranceModule],
+  imports:[AdminModule],
   providers: [ConversationService],
   controllers: [ConversationController]
 })

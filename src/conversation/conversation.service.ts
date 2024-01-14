@@ -18,9 +18,7 @@ export class ConversationService {
     private globalService: GlobalService,
     private fileUploadService: UploadService,
     @InjectModel(Advertisement.name)
-    private advertisementModel: Model<Advertisement>,
-    @InjectModel(Blogs.name)
-    private blogsModel: Model<Blogs>
+    private advertisementModel: Model<Advertisement>
   ) {}
   
   async addNewAdvertisement(file: Express.Multer.File,data: any): Promise<ArtisanApiResponse> {

@@ -4,6 +4,7 @@ import { Model } from "mongoose";
 import { AuthService } from "src/auth/auth.service";
 import { DuplicateResourceException } from "src/filters/app.custom.exception";
 import { GlobalService } from "src/global/database/global.service";
+import { Mapper } from "src/mapper/dto.mapper";
 import {
   BlogCreateRequest,
   UserInvitationRequest,
@@ -15,6 +16,7 @@ import { User } from "src/model/user.schema";
 import { NotificationService } from "src/notification/notification.service";
 import { UploadService } from "src/upload/upload.service";
 import { ErrorCode, NotificationMessage } from "src/utils/app.util";
+import { DEFAULT_PAGE, DEFAULT_SIZE } from "src/utils/constants";
 
 @Injectable()
 export class AdminService {
@@ -33,7 +35,7 @@ export class AdminService {
     return await this.autService.getPaginatedUsers(page, limit);
   }
   async addNewBlog(
-    loginUser: User,
+    loginUser: any,
     file: Express.Multer.File,
     data: any
   ): Promise<ArtisanApiResponse> {
@@ -44,10 +46,11 @@ export class AdminService {
     const newBlog = new this.blogsModel({
       ...payloadData,
       mediaName: uploadedFile,
+      author: loginUser.sub
+
     });
-   // await newBlog.save();
-   console.log(" New blog to Save:::{}", newBlog)
-   console.log("Login User:::::", loginUser)
+    await newBlog.save();
+   
     return new ArtisanApiResponse(
       NotificationMessage.BLOG_PUBLISHED,
       NotificationMessage.SUCCESS_STATUS,
@@ -102,5 +105,30 @@ export class AdminService {
     limit: number
   ): Promise<ArtisanApiResponse> {
     return this.autService.getPaginatedVisitors(page, limit);
+  }
+  async listBlog(
+    page: number = DEFAULT_PAGE,
+    limit: number = DEFAULT_SIZE
+  ): Promise<ArtisanApiResponse> {
+    const skip = (page - 1) * limit;
+
+    const visitors = await this.blogsModel
+      .find()
+      .populate({
+        path: "author",
+        populate: {
+          path: 'contact',
+          model: 'Contacts',
+        },
+      })
+      .skip(skip)
+      .limit(limit)
+      .exec();
+
+    return new ArtisanApiResponse(
+      visitors.map(item=>Mapper.mapToBlogs(item)),
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
   }
 }

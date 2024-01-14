@@ -12,6 +12,7 @@ export class FallbackExceptionFilter implements ExceptionFilter{
         const ctx = host.switchToHttp(),
             response = ctx.getResponse();
 
+            console.log(exception)
         return response.status(ErrorCode.HTTP_500).json({
             statusCode: ErrorCode.HTTP_500,
             message: NotificationMessage.FAIL_STATUS,
