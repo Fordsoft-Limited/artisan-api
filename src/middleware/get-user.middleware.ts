@@ -24,5 +24,4 @@ export class GetUserMiddleware implements NestMiddleware {
         
         next();
     }
-
 }

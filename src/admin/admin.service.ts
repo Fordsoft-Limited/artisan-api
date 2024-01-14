@@ -2,15 +2,14 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { AuthService } from "src/auth/auth.service";
-import {
-  DuplicateResourceException,
-} from "src/filters/app.custom.exception";
+import { DuplicateResourceException } from "src/filters/app.custom.exception";
 import { GlobalService } from "src/global/database/global.service";
 import {
   BlogCreateRequest,
   UserInvitationRequest,
 } from "src/model/app.request.model";
 import { ArtisanApiResponse } from "src/model/app.response.model";
+import { Blogs } from "src/model/blog.schema";
 import { Category } from "src/model/contact.schema";
 import { User } from "src/model/user.schema";
 import { NotificationService } from "src/notification/notification.service";
@@ -19,28 +18,42 @@ import { ErrorCode, NotificationMessage } from "src/utils/app.util";
 
 @Injectable()
 export class AdminService {
-
   constructor(
     private autService: AuthService,
-    private fileUploadService:UploadService,
+    private fileUploadService: UploadService,
     private globalService: GlobalService,
     private notificationSerivce: NotificationService,
-    @InjectModel(User.name) private userModel: Model<User>
+    @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Blogs.name) private blogsModel: Model<Blogs>
   ) {}
-  async getPaginatedUsers(page: number, limit: number): Promise<ArtisanApiResponse> {
+  async getPaginatedUsers(
+    page: number,
+    limit: number
+  ): Promise<ArtisanApiResponse> {
     return await this.autService.getPaginatedUsers(page, limit);
   }
-  async addNewBlog(file: Express.Multer.File,data: any): Promise<ArtisanApiResponse> {
-    const payloadData:BlogCreateRequest =JSON.parse(data.payload) as BlogCreateRequest
-      const uploadedFile:string = await this.fileUploadService.uploadFile(file)
-    
-  
-      return new ArtisanApiResponse(
-        NotificationMessage.BLOG_PUBLISHED,
-        NotificationMessage.SUCCESS_STATUS,
-        ErrorCode.HTTP_200
-      );
-    }
+  async addNewBlog(
+    loginUser: User,
+    file: Express.Multer.File,
+    data: any
+  ): Promise<ArtisanApiResponse> {
+    const payloadData: BlogCreateRequest = JSON.parse(
+      data.payload
+    ) as BlogCreateRequest;
+    const uploadedFile: string = await this.fileUploadService.uploadFile(file);
+    const newBlog = new this.blogsModel({
+      ...payloadData,
+      mediaName: uploadedFile,
+    });
+   // await newBlog.save();
+   console.log(" New blog to Save:::{}", newBlog)
+   console.log("Login User:::::", loginUser)
+    return new ArtisanApiResponse(
+      NotificationMessage.BLOG_PUBLISHED,
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
+  }
   async checkDuplicateUsername(
     userRequest: UserInvitationRequest
   ): Promise<void> {

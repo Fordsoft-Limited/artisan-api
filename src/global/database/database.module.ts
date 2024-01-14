@@ -16,6 +16,7 @@ import { Role, RoleSchema } from "src/model/role.schema";
 import { Setting, SettingSchema } from "src/model/setting.shema";
 import { User, UserSchema } from "src/model/user.schema";
 import { GlobalService } from "./global.service";
+import { AuthModule } from "src/auth/auth.module";
 
 @Global()
 @Module({

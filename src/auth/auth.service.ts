@@ -26,8 +26,8 @@ export class AuthService {
     @InjectModel(Guests.name) private guestsModel: Model<Guests>,
   ) {}
 
-  public getTokenForUser(user: User): string {
-    return this.jwtService.sign({
+  async getTokenForUser(user: User): Promise<string> {
+    return await this.jwtService.signAsync({
       username: user.username,
       roles: user.roles,
       sub: user._id,
@@ -88,7 +88,7 @@ export class AuthService {
     }
     const userResponse =Mapper.mapToUserResponse(user)
     return new ArtisanApiResponse({...userResponse, 
-      token: this.getTokenForUser(user),
+      token: await this.getTokenForUser(user),
     },
       NotificationMessage.SUCCESS_STATUS,
       ErrorCode.HTTP_200

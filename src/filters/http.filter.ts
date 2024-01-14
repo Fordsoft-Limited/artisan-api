@@ -16,7 +16,6 @@ export class HttpExceptionFilter implements  ExceptionFilter {
               request = ctx.getRequest(),
                statusCode = exception.getStatus();
 
-
         return response.status(statusCode).json({
             status: statusCode,
             createdBy: "HttpExceptionFilter",
