@@ -6,6 +6,7 @@ import { User } from "src/model/user.schema";
 export class Mapper {
     static mapToAdvertisementResponse(advertisement: Advertisement): any {
       return {
+        id: advertisement['id'],
         category: advertisement.category,
         description: advertisement.description,
         businessName: advertisement.businessName,
@@ -45,6 +46,7 @@ export class Mapper {
     }
     static mapToBlogs(blog: Blogs): any {
       return {
+        id: blog['id'],
        title: blog.title,
        description: blog.description,
        mediaName: blog.mediaName,
@@ -53,6 +55,7 @@ export class Mapper {
     }
     static mapToGuest(guest:Guests):any{
       return{
+        id: guest['id'],
         reasonForVisit:guest.reasonForVisit,
         methodOfContact: guest.methodOfContact,
         numberOfVisit: guest.numberOfVisit,

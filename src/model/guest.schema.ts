@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Types } from "mongoose";
+import { Types,Document } from "mongoose";
 
 
 export enum ContactMethod{
@@ -9,7 +9,7 @@ export enum ContactMethod{
 }
 
 @Schema({ timestamps: true })
-export class Guests {
+export class Guests{
   @Prop()
   reasonForVisit: string;
 
