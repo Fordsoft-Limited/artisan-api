@@ -20,6 +20,7 @@ import { GetUserMiddleware } from "src/middleware/get-user.middleware";
 import { User } from "src/model/user.schema";
 @ApiTags("admin")
 @Controller("admin")
+@UseGuards(GetUserMiddleware)
 export class AdminController {
   constructor(private adminService: AdminService) {}
 
@@ -49,7 +50,7 @@ export class AdminController {
     return await this.adminService.sendInvitationToUser(invitationRequest);
   }
 
-  @UseGuards(GetUserMiddleware)
+  
   @Post("/blogs")
   @UseInterceptors(FileInterceptor("file"))
   @ApiConsumes("multipart/form-data", "application/json")
