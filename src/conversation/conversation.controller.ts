@@ -13,8 +13,8 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { LoginUser } from "src/middleware/login.user";
 import { GetUserMiddleware } from "src/middleware/get-user.middleware";
 
-@ApiTags("Article")
-@Controller("article")
+@ApiTags("Administrative Actions")
+@Controller("actions")
 @UseGuards(GetUserMiddleware)
 export class ConversationController {
   constructor(
