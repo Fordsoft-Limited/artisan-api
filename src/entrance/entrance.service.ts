@@ -12,6 +12,10 @@ import { Category } from "src/model/contact.schema";
 import { Guests } from "src/model/guest.schema";
 import { AuthService } from "src/auth/auth.service";
 import { GlobalService } from "src/global/database/global.service";
+import { Blogs } from "src/model/blog.schema";
+import { Mapper } from "src/mapper/dto.mapper";
+import { DEFAULT_PAGE, DEFAULT_SIZE } from "src/utils/constants";
+import { Advertisement } from "src/model/advertisement.schema";
 
 @Injectable()
 export class EntranceService {
@@ -19,24 +23,75 @@ export class EntranceService {
     private authService: AuthService,
     private globalService: GlobalService,
     @InjectModel(Guests.name) private guestsModel: Model<Guests>,
-   
+    @InjectModel(Blogs.name) private blogsModel: Model<Blogs>,
+    @InjectModel(Advertisement.name)
+    private advertisementModel: Model<Advertisement>
   ) {}
+  async listPaginatedAdvertisement(
+    page: number = DEFAULT_PAGE,
+    limit: number = DEFAULT_SIZE
+  ): Promise<ArtisanApiResponse> {
+    const skip = (page - 1) * limit;
 
+    const advertisement = await this.advertisementModel
+      .find()
+      .populate({
+        path: "contact",
+      })
+      .skip(skip)
+      .limit(limit)
+      .exec();
+
+    return new ArtisanApiResponse(
+      advertisement.map((advertisement) =>
+        Mapper.mapToAdvertisementResponse(advertisement)
+      ),
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
+  }
+
+  async listBlog(
+    page: number = DEFAULT_PAGE,
+    limit: number = DEFAULT_SIZE
+  ): Promise<ArtisanApiResponse> {
+    const skip = (page - 1) * limit;
+
+    const visitors = await this.blogsModel
+      .find()
+      .populate({
+        path: "author",
+        populate: {
+          path: "contact",
+          model: "Contacts",
+        },
+      })
+      .skip(skip)
+      .limit(limit)
+      .exec();
+
+    return new ArtisanApiResponse(
+      visitors.map((item) => Mapper.mapToBlogs(item)),
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
+  }
   async activateAccount(
     payload: AccountActivationRequest
   ): Promise<ArtisanApiResponse> {
     return await this.authService.activateAccount(payload);
   }
   async login(login: LoginRequest): Promise<ArtisanApiResponse> {
-   return await this.authService.validateLoginUser(login);
+    return await this.authService.validateLoginUser(login);
   }
-  
-  
 
   async createVisitRequest(
     visitorRequest: VisitorRequest
   ): Promise<ArtisanApiResponse> {
-    await this.globalService.checkDuplicate({ ...visitorRequest, willIdReturn: false });
+    await this.globalService.checkDuplicate({
+      ...visitorRequest,
+      willIdReturn: false,
+    });
     // Create a new contact
     const savedContact = await this.globalService.createContact({
       ...visitorRequest,
@@ -60,7 +115,4 @@ export class EntranceService {
       ErrorCode.HTTP_200
     );
   }
-  
-
-  
 }

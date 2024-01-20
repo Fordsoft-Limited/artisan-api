@@ -1,5 +1,6 @@
 import { Advertisement } from "src/model/advertisement.schema";
 import { Blogs } from "src/model/blog.schema";
+import { Guests } from "src/model/guest.schema";
 import { User } from "src/model/user.schema";
 
 export class Mapper {
@@ -33,13 +34,13 @@ export class Mapper {
   
      static mapToContactResponse(contact: any): any {
       return {
-        category: contact.category,
-        name: contact.name,
-        phone: contact.phone,
-        email: contact.email,
-        street: contact.street,
-        city: contact.city,
-        postalCode: contact.postalCode,
+        category: contact?.category,
+        name: contact?.name,
+        phone: contact?.phone,
+        email: contact?.email,
+        street: contact?.street,
+        city: contact?.city,
+        postalCode: contact?.postalCode,
       };
     }
     static mapToBlogs(blog: Blogs): any {
@@ -50,5 +51,14 @@ export class Mapper {
         author: this.mapToUser(blog['author']),
       };
     }
+    static mapToGuest(guest:Guests):any{
+      return{
+        reasonForVisit:guest.reasonForVisit,
+        methodOfContact: guest.methodOfContact,
+        numberOfVisit: guest.numberOfVisit,
+         contact: this.mapToContactResponse(guest['contact'])
+      }
+    }
+  
   }
   

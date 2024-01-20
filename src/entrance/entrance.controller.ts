@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Param, Post, Res } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, Param, Post, Query, Res } from "@nestjs/common";
 import { EntranceService } from "./entrance.service";
 import { LoginRequest } from "./model/login.model";
 import { ArtisanApiResponse } from "src/model/app.response.model";
@@ -8,10 +8,33 @@ import {
   VisitorRequest,
 } from "src/model/app.request.model";
 import { ApiTags } from "@nestjs/swagger";
+import { ApiPath } from "src/utils/path.param";
 @ApiTags("Entrance")
 @Controller("entrance")
 export class EntranceController {
   constructor(private entranceService: EntranceService) {}
+
+  @Get("blogs")
+  async listBlogs(
+    @Query(ApiPath.PAGE_PARA)
+    page: number,
+    @Query(ApiPath.LIMIT_PARAM)
+    limit: number
+  ): Promise<ArtisanApiResponse> {
+    return await this.entranceService.listBlog(page, limit);
+  }
+  @Get("advsertisements")
+  async listPaginatedAdvertisement(
+    @Param(ApiPath.PAGE_PARA)
+    page: number,
+    @Param(ApiPath.LIMIT_PARAM)
+    limit: number
+  ): Promise<ArtisanApiResponse> {
+    return await this.entranceService.listPaginatedAdvertisement(
+      page,
+      limit
+    );
+  }
 
   @Post("/account/activate")
   @HttpCode(ErrorCode.HTTP_200)

@@ -110,7 +110,7 @@ export class AuthService {
       .exec();
 
     return new ArtisanApiResponse(
-      visitors,
+      visitors.map(record=>Mapper.mapToGuest(record)),
       NotificationMessage.SUCCESS_STATUS,
       ErrorCode.HTTP_200
     );

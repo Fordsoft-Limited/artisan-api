@@ -2,15 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { GlobalService } from "src/global/database/global.service";
-import { Mapper } from "src/mapper/dto.mapper";
 import { Advertisement } from "src/model/advertisement.schema";
-import { AdvertisementRequest } from "src/model/app.request.model";
+import { AdvertisementRequest, BlogCreateRequest } from "src/model/app.request.model";
 import { ArtisanApiResponse } from "src/model/app.response.model";
 import { Blogs } from "src/model/blog.schema";
 import { Category } from "src/model/contact.schema";
 import { UploadService } from "src/upload/upload.service";
 import { NotificationMessage, ErrorCode } from "src/utils/app.util";
-import { DEFAULT_PAGE, DEFAULT_SIZE } from "src/utils/constants";
 
 @Injectable()
 export class ConversationService {
@@ -18,9 +16,34 @@ export class ConversationService {
     private globalService: GlobalService,
     private fileUploadService: UploadService,
     @InjectModel(Advertisement.name)
-    private advertisementModel: Model<Advertisement>
+    private advertisementModel: Model<Advertisement>,
+    @InjectModel(Blogs.name) private blogsModel: Model<Blogs>
   ) {}
   
+  async addNewBlog(
+    loginUser: any,
+    file: Express.Multer.File,
+    data: any
+  ): Promise<ArtisanApiResponse> {
+    const payloadData: BlogCreateRequest = JSON.parse(
+      data.payload
+    ) as BlogCreateRequest;
+    const uploadedFile: string = await this.fileUploadService.uploadFile(file);
+    const newBlog = new this.blogsModel({
+      ...payloadData,
+      mediaName: uploadedFile,
+      author: loginUser.sub
+
+    });
+    await newBlog.save();
+  
+   
+    return new ArtisanApiResponse(
+      NotificationMessage.BLOG_PUBLISHED,
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
+  }
   async addNewAdvertisement(file: Express.Multer.File,data: any): Promise<ArtisanApiResponse> {
   const payloadData:AdvertisementRequest =JSON.parse(data.payload) as AdvertisementRequest
     const uploadedFile:string = await this.fileUploadService.uploadFile(file)
@@ -52,26 +75,5 @@ export class ConversationService {
     );
   }
 
-  async listPaginatedAdvertisement(
-    page: number = DEFAULT_PAGE,
-    limit: number = DEFAULT_SIZE
-  ): Promise<ArtisanApiResponse> {
-    const skip = (page - 1) * limit;
-
-    const advertisement = await this.advertisementModel
-      .find()
-      .populate({
-        path: "contact",
-      })
-      .skip(skip)
-      .limit(limit)
-      .exec();
-
-    return new ArtisanApiResponse(
-      advertisement.map(advertisement=>Mapper.mapToAdvertisementResponse(advertisement)),
-      NotificationMessage.SUCCESS_STATUS,
-      ErrorCode.HTTP_200
-    );
-  }
-  
+ 
 }
