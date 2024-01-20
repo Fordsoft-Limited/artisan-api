@@ -102,8 +102,18 @@ export class AccountActivationRequest{
   @IsNotEmpty()
   password: string;
 }
+export class ArtisanRequest extends BaseRequest{ 
+  @ApiProperty()
+  businessType: string;
+  @ApiProperty()
+  serviceDescription: string;
+  @ApiProperty()
+  businessName: string;
+  @ApiProperty()
+  websiteLink: string;
+}
 
-export class BlogCreateRequest{
+export class BlogCreateRequest {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()

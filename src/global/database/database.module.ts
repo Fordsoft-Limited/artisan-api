@@ -17,6 +17,7 @@ import { Setting, SettingSchema } from "src/model/setting.shema";
 import { User, UserSchema } from "src/model/user.schema";
 import { GlobalService } from "./global.service";
 import { AuthModule } from "src/auth/auth.module";
+import { Artisan, ArtisanSchema } from "src/model/artisan.schema";
 
 @Global()
 @Module({
@@ -41,6 +42,7 @@ import { AuthModule } from "src/auth/auth.module";
       { name: Blogs.name, schema: BlogsSchema },
       { name: Setting.name, schema: SettingSchema },
       { name: Role.name, schema: RoleSchema },
+      {name: Artisan.name,schema: ArtisanSchema}
     ]),
   ],
   providers: [GlobalService],
