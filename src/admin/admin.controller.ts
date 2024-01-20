@@ -12,8 +12,8 @@ import { UserInvitationRequest } from "src/model/app.request.model";
 import { ApiTags } from "@nestjs/swagger";
 import { ApiPath } from "src/utils/path.param";
 import { GetUserMiddleware } from "src/middleware/get-user.middleware";
-@ApiTags("admin")
-@Controller("admin")
+@ApiTags("Administrative Report")
+@Controller("reports")
 @UseGuards(GetUserMiddleware)
 export class AdminController {
   constructor(private adminService: AdminService) {}
