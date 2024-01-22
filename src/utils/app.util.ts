@@ -23,7 +23,17 @@ export class NotificationMessage{
     static readonly ACCOUNT_ACTIVATED:string="Great! Account successfully activated"
     static readonly ADVERTISEMENT_SAVED:string= "Advertisement successfully saved"
     static readonly ARTISAN_SAVED:string= "Artisan successfully saved"
-
+    static readonly BLOG_DELETED:string="Great! Deleted successfully"
+    static readonly ADVERISEMENT_DELETED:string="Great! Deleted successfully"
+    static readonly VISITOR_DELETED:string="Great! Deleted successfully"
+    static readonly ARTISAN_DELETED:string="Great! Deleted successfully"
     static readonly BLOG_PUBLISHED:string= "BLOG successfully published"
+    static readonly BLOG_NOT_FOUND:string="Blog with specified constraints not found"
+    static readonly ARTISAN_NOT_FOUND:string="Artisan with specified constraints not found"
+    static readonly ADVERISEMENT_NOT_FOUND:string="Blog with specified constraints not found"
+    static readonly VISITOR_NOT_FOUND:string="Blog with specified constraints not found"
+    static readonly SERVER_ERROR:string="Server error"
+
+
 
 }

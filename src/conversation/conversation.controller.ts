@@ -1,7 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
+  Param,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -17,9 +20,7 @@ import { GetUserMiddleware } from "src/middleware/get-user.middleware";
 @Controller("actions")
 @UseGuards(GetUserMiddleware)
 export class ConversationController {
-  constructor(
-    private conversationService: ConversationService
-  ) {}
+  constructor(private conversationService: ConversationService) {}
   @Post("/blogs")
   @UseInterceptors(FileInterceptor("file"))
   @ApiConsumes("multipart/form-data", "application/json")
@@ -38,11 +39,12 @@ export class ConversationController {
       required: ["payload"],
     },
   })
-  async addBlog(@LoginUser() loginUser:any,
+  async addBlog(
+    @LoginUser() loginUser: any,
     @UploadedFile() file,
     @Body() payload: any
   ): Promise<ArtisanApiResponse> {
-    return await this.conversationService.addNewBlog(loginUser,file, payload);
+    return await this.conversationService.addNewBlog(loginUser, file, payload);
   }
 
   @Post("/advsertisement")
@@ -88,10 +90,33 @@ export class ConversationController {
       required: ["payload"],
     },
   })
-  async addArtisan(@LoginUser() loginUser:any,
+  async addArtisan(
+    @LoginUser() loginUser: any,
     @UploadedFile() file,
     @Body() payload: any
   ): Promise<ArtisanApiResponse> {
-    return await this.conversationService.addArtisan(loginUser,file, payload);
+    return await this.conversationService.addArtisan(loginUser, file, payload);
+  }
+
+  @Delete("deleteBlog/:id")
+  async deleteBlog(@Param("id") id: string): Promise<ArtisanApiResponse> {
+    return this.conversationService.deleteBlog(id);
+  }
+
+  @Delete("deleteArtisan/:id")
+  async deleteArtisan(@Param("id") id: string): Promise<ArtisanApiResponse> {
+    return this.conversationService.deleteArtisan(id);
+  }
+
+  @Delete("deleteAdvertisement/:id")
+  async deleteAdvertisement(
+    @Param("id") id: string
+  ): Promise<ArtisanApiResponse> {
+    return this.conversationService.deleteAdvertisement(id);
+  }
+
+  @Delete("deleteVisitor/:id")
+  async deleteVisitor(@Param("id") id: string): Promise<ArtisanApiResponse> {
+    return this.conversationService.deleteVisitor(id);
   }
 }

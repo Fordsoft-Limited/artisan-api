@@ -16,6 +16,7 @@ import { Blogs } from "src/model/blog.schema";
 import { Mapper } from "src/mapper/dto.mapper";
 import { DEFAULT_PAGE, DEFAULT_SIZE } from "src/utils/constants";
 import { Advertisement } from "src/model/advertisement.schema";
+import { Artisan } from "src/model/artisan.schema";
 
 @Injectable()
 export class EntranceService {
@@ -25,7 +26,8 @@ export class EntranceService {
     @InjectModel(Guests.name) private guestsModel: Model<Guests>,
     @InjectModel(Blogs.name) private blogsModel: Model<Blogs>,
     @InjectModel(Advertisement.name)
-    private advertisementModel: Model<Advertisement>
+    private advertisementModel: Model<Advertisement>,
+    @InjectModel(Artisan.name) private artisanModel: Model<Artisan>
   ) {}
   async listPaginatedAdvertisement(
     page: number = DEFAULT_PAGE,
@@ -46,6 +48,28 @@ export class EntranceService {
       advertisement.map((advertisement) =>
         Mapper.mapToAdvertisementResponse(advertisement)
       ),
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
+  }
+
+  async listPaginatedArtisan(
+    page: number = DEFAULT_PAGE,
+    limit: number = DEFAULT_SIZE
+  ): Promise<ArtisanApiResponse> {
+    const skip = (page - 1) * limit;
+
+    const artisan = await this.artisanModel
+      .find()
+      .populate({
+        path: "contact",
+      })
+      .skip(skip)
+      .limit(limit)
+      .exec();
+
+    return new ArtisanApiResponse(
+      artisan.map((artisan) => Mapper.mapToArtisanResponse(artisan)),
       NotificationMessage.SUCCESS_STATUS,
       ErrorCode.HTTP_200
     );
@@ -76,6 +100,34 @@ export class EntranceService {
       ErrorCode.HTTP_200
     );
   }
+
+  async listRecentBlogs(
+    page: number = DEFAULT_PAGE,
+    limit: number = DEFAULT_SIZE
+  ): Promise<ArtisanApiResponse> {
+    const skip = (page - 1) * limit;
+
+    const recentBlogs = await this.blogsModel
+      .find()
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "author",
+        populate: {
+          path: "contact",
+          model: "Contacts",
+        },
+      })
+      .skip(skip)
+      .limit(limit)
+      .exec();
+
+    return new ArtisanApiResponse(
+      recentBlogs.map((item) => Mapper.mapToBlogs(item)),
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
+  }
+
   async activateAccount(
     payload: AccountActivationRequest
   ): Promise<ArtisanApiResponse> {

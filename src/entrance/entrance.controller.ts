@@ -30,10 +30,26 @@ export class EntranceController {
     @Param(ApiPath.LIMIT_PARAM)
     limit: number
   ): Promise<ArtisanApiResponse> {
-    return await this.entranceService.listPaginatedAdvertisement(
-      page,
-      limit
-    );
+    return await this.entranceService.listPaginatedAdvertisement(page, limit);
+  }
+  @Get("artisans")
+  async listPaginatedArtisan(
+    @Param(ApiPath.PAGE_PARA)
+    page: number,
+    @Param(ApiPath.LIMIT_PARAM)
+    limit: number
+  ): Promise<ArtisanApiResponse> {
+    return await this.entranceService.listPaginatedArtisan(page, limit);
+  }
+
+  @Get("recent/blog")
+  async listRecentBlogs(
+    @Query(ApiPath.PAGE_PARA)
+    page: number,
+    @Query(ApiPath.LIMIT_PARAM) 
+    limit: number
+  ): Promise<ArtisanApiResponse> {
+    return await this.entranceService.listRecentBlogs(page, limit);
   }
 
   @Post("/account/activate")
