@@ -30,9 +30,14 @@ export class NotificationMessage{
     static readonly BLOG_PUBLISHED:string= "BLOG successfully published"
     static readonly BLOG_NOT_FOUND:string="Blog with specified constraints not found"
     static readonly ARTISAN_NOT_FOUND:string="Artisan with specified constraints not found"
-    static readonly ADVERISEMENT_NOT_FOUND:string="Blog with specified constraints not found"
-    static readonly VISITOR_NOT_FOUND:string="Blog with specified constraints not found"
+    static readonly ADVERTISEMENT_NOT_FOUND:string="Artisan with specified constraints not found"
+    static readonly ADVERISEMENT_NOT_FOUND:string="Adverisement with specified constraints not found"
+    static readonly VISITOR_NOT_FOUND:string="Visitor with specified constraints not found"
     static readonly SERVER_ERROR:string="Server error"
+    static readonly UPDATE_ARTISAN_SUCCESS:string="Artisan update Successfully"
+    static readonly UPDATE_BLOG_SUCCESS:string="Blog update Successfully"
+    static readonly UPDATE_ADVERTISEMENT_SUCCESS:string="ADVERTISEMENT update Successfully"
+
 
 
 

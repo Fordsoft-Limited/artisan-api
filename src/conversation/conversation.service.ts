@@ -5,7 +5,11 @@ import { DuplicateResourceException } from "src/filters/app.custom.exception";
 import { GlobalService } from "src/global/database/global.service";
 import { Mapper } from "src/mapper/dto.mapper";
 import { Advertisement } from "src/model/advertisement.schema";
-import { AdvertisementRequest, ArtisanRequest, BlogCreateRequest } from "src/model/app.request.model";
+import {
+  AdvertisementRequest,
+  ArtisanRequest,
+  BlogCreateRequest,
+} from "src/model/app.request.model";
 import { ArtisanApiResponse } from "src/model/app.response.model";
 import { Artisan } from "src/model/artisan.schema";
 import { Blogs } from "src/model/blog.schema";
@@ -126,117 +130,160 @@ export class ConversationService {
   }
 
   async deleteBlog(blogId: string): Promise<ArtisanApiResponse> {
-    try {
-      const deletedBlog = await this.blogsModel.deleteOne({
-        where: { id: blogId },
-      });
-
-      if (deletedBlog.deletedCount > 0) {
-        return new ArtisanApiResponse(
-          NotificationMessage.BLOG_DELETED,
-          NotificationMessage.SUCCESS_STATUS,
-          ErrorCode.HTTP_200
-        );
-      } else {
-        return new ArtisanApiResponse(
-          NotificationMessage.BLOG_NOT_FOUND,
-          NotificationMessage.FAIL_STATUS,
-          ErrorCode.HTTP_404
-        );
-      }
-    } catch (error) {
+    const deletedBlog = await this.blogsModel.deleteOne({
+      where: { id: blogId },
+    });
+    if (deletedBlog.deletedCount === 1) {
       return new ArtisanApiResponse(
-        NotificationMessage.SERVER_ERROR,
+        NotificationMessage.BLOG_DELETED,
+        NotificationMessage.SUCCESS_STATUS,
+        ErrorCode.HTTP_200
+      );
+    } else {
+      return new ArtisanApiResponse(
+        NotificationMessage.BLOG_NOT_FOUND,
         NotificationMessage.FAIL_STATUS,
-        ErrorCode.HTTP_500
+        ErrorCode.HTTP_404
       );
     }
   }
 
-  async deleteArtisan(artisanId: string): Promise<ArtisanApiResponse> {
-    try {
-      const deletedArtisan = await this.artisanModel.deleteOne({
-        where: { id: artisanId },
-      });
+  async deleteArtisan(id: string): Promise<ArtisanApiResponse> {
+    const deletedArtisan = await this.artisanModel.deleteOne({
+      where: { id: id },
+    });
 
-      if (deletedArtisan.deletedCount > 0) {
-        return new ArtisanApiResponse(
-          NotificationMessage.ARTISAN_DELETED,
-          NotificationMessage.SUCCESS_STATUS,
-          ErrorCode.HTTP_200
-
-        );
-      } else {
-        return new ArtisanApiResponse(
-          NotificationMessage.ARTISAN_NOT_FOUND,
-          NotificationMessage.FAIL_STATUS,
-          ErrorCode.HTTP_404
-        );
-      }
-    } catch (error) {
+    if (deletedArtisan.deletedCount === 1) {
       return new ArtisanApiResponse(
-        NotificationMessage.SERVER_ERROR,
+        NotificationMessage.ARTISAN_DELETED,
+        NotificationMessage.SUCCESS_STATUS,
+        ErrorCode.HTTP_200
+      );
+    } else {
+      return new ArtisanApiResponse(
+        NotificationMessage.ARTISAN_NOT_FOUND,
         NotificationMessage.FAIL_STATUS,
-        ErrorCode.HTTP_500
+        ErrorCode.HTTP_404
       );
     }
   }
 
-  async deleteAdvertisement(
-    advertisementId: string
+  async deleteAdvertisement(id: string): Promise<ArtisanApiResponse> {
+    const deleteAdvertisement = await this.advertisementModel.deleteOne({
+      where: { id: id },
+    });
+
+    if (deleteAdvertisement.deletedCount === 1) {
+      return new ArtisanApiResponse(
+        NotificationMessage.ADVERISEMENT_DELETED,
+        NotificationMessage.SUCCESS_STATUS,
+        ErrorCode.HTTP_200
+      );
+    } else {
+      return new ArtisanApiResponse(
+        NotificationMessage.ADVERISEMENT_NOT_FOUND,
+        NotificationMessage.FAIL_STATUS,
+        ErrorCode.HTTP_404
+      );
+    }
+  }
+
+  async deleteVisitor(id: string): Promise<ArtisanApiResponse> {
+    const deleteVisitor = await this.userModel.deleteOne({
+      where: { id: id },
+    });
+
+    if (deleteVisitor.deletedCount === 1) {
+      return new ArtisanApiResponse(
+        NotificationMessage.VISITOR_DELETED,
+        NotificationMessage.SUCCESS_STATUS,
+        ErrorCode.HTTP_200
+      );
+    } else {
+      return new ArtisanApiResponse(
+        NotificationMessage.VISITOR_NOT_FOUND,
+        NotificationMessage.FAIL_STATUS,
+        ErrorCode.HTTP_404
+      );
+    }
+  }
+
+  async updateArtisan(
+    id: string,
+    payload: ArtisanRequest
   ): Promise<ArtisanApiResponse> {
-    try {
-      const deleteAdvertisement = await this.advertisementModel.deleteOne({
-        where: { id: advertisementId },
-      });
-
-      if (deleteAdvertisement.deletedCount > 0) {
-        return new ArtisanApiResponse(
-          NotificationMessage.ADVERISEMENT_DELETED,
-          NotificationMessage.SUCCESS_STATUS,
-          ErrorCode.HTTP_200
-        );
-      } else {
-        return new ArtisanApiResponse(
-          NotificationMessage.ADVERISEMENT_NOT_FOUND,
-          NotificationMessage.FAIL_STATUS,
-          ErrorCode.HTTP_404
-        );
+    const existingArtisan = await this.artisanModel.findByIdAndUpdate(
+      id,
+      payload,
+      {
+        new: true,
+        runValidators: true,
       }
-    } catch (error) {
+    );
+    if (!existingArtisan) {
       return new ArtisanApiResponse(
-        NotificationMessage.SERVER_ERROR,
+        NotificationMessage.ARTISAN_NOT_FOUND,
         NotificationMessage.FAIL_STATUS,
-        ErrorCode.HTTP_500
+        ErrorCode.HTTP_404
       );
     }
+    Object.assign(existingArtisan, payload);
+    const updatedArtisan = await existingArtisan.save();
+    const artisanResponse = Mapper.mapToArtisanResponse(updatedArtisan);
+    return new ArtisanApiResponse(
+      artisanResponse,
+      NotificationMessage.UPDATE_ARTISAN_SUCCESS,
+      ErrorCode.HTTP_200
+    );
   }
 
-  async deleteVisitor(visitorId: string): Promise<ArtisanApiResponse> {
-    try {
-      const deleteVisitor = await this.userModel.deleteOne({
-        where: { id: visitorId },
-      });
-
-      if (deleteVisitor.deletedCount > 0) {
-        return new ArtisanApiResponse(
-          NotificationMessage.VISITOR_DELETED,
-          NotificationMessage.SUCCESS_STATUS,
-          ErrorCode.HTTP_200
-        );
-      } else {
-        return new ArtisanApiResponse(
-          NotificationMessage.VISITOR_NOT_FOUND,
-          NotificationMessage.FAIL_STATUS,
-          ErrorCode.HTTP_404
-        );
-      }
-    } catch (error) {
+  async updateBlog(
+    id: string,
+    payload: BlogCreateRequest
+  ): Promise<ArtisanApiResponse> {
+    const existingBlog = await this.blogsModel.findByIdAndUpdate(id, payload, {
+      new: true,
+      runValidators: true,
+    });
+    if (!existingBlog) {
       return new ArtisanApiResponse(
-        NotificationMessage.SERVER_ERROR,
+        NotificationMessage.BLOG_NOT_FOUND,
         NotificationMessage.FAIL_STATUS,
-        ErrorCode.HTTP_500
+        ErrorCode.HTTP_404
       );
     }
+    Object.assign(existingBlog, payload);
+    const updatedBlog = await existingBlog.save();
+    const blogResponse = Mapper.mapToBlogs(updatedBlog);
+    return new ArtisanApiResponse(
+      blogResponse,
+      NotificationMessage.UPDATE_BLOG_SUCCESS,
+      ErrorCode.HTTP_200
+    );
+  }
+
+  async updateAdvertisement(
+    id: string,
+    payload: AdvertisementRequest
+  ): Promise<ArtisanApiResponse> {
+    const existingAdvert = await this.advertisementModel.findByIdAndUpdate(id, payload, {
+      new: true,
+      runValidators: true,
+    });
+    if (!existingAdvert) {
+      return new ArtisanApiResponse(
+        NotificationMessage.ADVERTISEMENT_NOT_FOUND,
+        NotificationMessage.FAIL_STATUS,
+        ErrorCode.HTTP_404
+      );
+    }
+    Object.assign(existingAdvert, payload);
+    const updatedAdvert = await existingAdvert.save();
+    const advertResponse = Mapper.mapToAdvertisementResponse(updatedAdvert);
+    return new ArtisanApiResponse(
+      advertResponse,
+      NotificationMessage.UPDATE_ADVERTISEMENT_SUCCESS,
+      ErrorCode.HTTP_200
+    );
   }
 }

@@ -2,8 +2,10 @@ import {
   Body,
   Controller,
   Delete,
+  HttpCode,
   Param,
   Post,
+  Put,
   Query,
   UploadedFile,
   UseGuards,
@@ -15,6 +17,8 @@ import { ConversationService } from "./conversation.service";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { LoginUser } from "src/middleware/login.user";
 import { GetUserMiddleware } from "src/middleware/get-user.middleware";
+import { AdvertisementRequest, ArtisanRequest, BlogCreateRequest } from "src/model/app.request.model";
+import { ErrorCode } from "src/utils/app.util";
 
 @ApiTags("Administrative Actions")
 @Controller("actions")
@@ -118,5 +122,38 @@ export class ConversationController {
   @Delete("deleteVisitor/:id")
   async deleteVisitor(@Param("id") id: string): Promise<ArtisanApiResponse> {
     return this.conversationService.deleteVisitor(id);
+  }
+
+  @Put("updateArtisan/:id")
+  @HttpCode(ErrorCode.HTTP_200)
+  async updateArtisan(
+    @Param("id")
+    id: string,
+    @Body()
+    payload: ArtisanRequest
+  ): Promise<ArtisanApiResponse> {
+    return this.conversationService.updateArtisan(id, payload);
+  }
+
+  @Put("updateBlog/:id")
+  @HttpCode(ErrorCode.HTTP_200)
+  async updateBlog(
+    @Param("id")
+    id: string,
+    @Body()
+    payload: BlogCreateRequest
+  ): Promise<ArtisanApiResponse> {
+    return this.conversationService.updateBlog(id, payload);
+  }
+
+  @Put("updateAdvert/:id")
+  @HttpCode(ErrorCode.HTTP_200)
+  async updateAdvertisement(
+    @Param("id")
+    id: string,
+    @Body()
+    payload: AdvertisementRequest
+  ): Promise<ArtisanApiResponse> {
+    return this.conversationService.updateAdvertisement(id, payload);
   }
 }

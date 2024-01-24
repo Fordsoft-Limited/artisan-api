@@ -18,11 +18,11 @@ export class Artisan extends Document {
   @Prop()
   websiteLink: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'User' })
+  @Prop({ type: Types.ObjectId, ref: "User" })
   createdBy: Types.ObjectId;
 
- @Prop({ type: Types.ObjectId, ref: 'Contacts'})
- contact: Types.ObjectId;
+  @Prop({ type: Types.ObjectId, ref: "Contacts" })
+  contact: Types.ObjectId;
 }
 
 export const ArtisanSchema = SchemaFactory.createForClass(Artisan);
