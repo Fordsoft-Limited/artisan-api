@@ -5,9 +5,8 @@ import { ErrorCode, NotificationMessage } from 'src/utils/app.util';
 export class FallbackExceptionFilter implements ExceptionFilter{
 
     catch(exception: any, host: ArgumentsHost)  {
-
         console.log("fallback exception handler triggered",
-            JSON.stringify(exception));
+        JSON.stringify(exception));
 
         const ctx = host.switchToHttp(),
             response = ctx.getResponse();

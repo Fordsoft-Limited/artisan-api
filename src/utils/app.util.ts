@@ -9,6 +9,7 @@ export class ErrorCode{
 
 }
 export class NotificationMessage{
+    static readonly RATING_ADDED:string="Great rating added sucessfully"
     static readonly FILE_NOT_FOUND:string="The file you specified not found"
     static readonly FAIL_STATUS:string="Fail"
     static readonly SUCCESS_STATUS:string="Success"

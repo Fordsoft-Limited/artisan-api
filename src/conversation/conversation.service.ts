@@ -1,7 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { DuplicateResourceException } from "src/filters/app.custom.exception";
+import {
+  DuplicateResourceException,
+  RecordNotFoundException,
+} from "src/filters/app.custom.exception";
 import { GlobalService } from "src/global/database/global.service";
 import { Mapper } from "src/mapper/dto.mapper";
 import { Advertisement } from "src/model/advertisement.schema";
@@ -14,6 +17,7 @@ import { ArtisanApiResponse } from "src/model/app.response.model";
 import { Artisan } from "src/model/artisan.schema";
 import { Blogs } from "src/model/blog.schema";
 import { Category } from "src/model/contact.schema";
+import { Rating } from "src/model/rating.schema";
 import { User } from "src/model/user.schema";
 import { UploadService } from "src/upload/upload.service";
 import { NotificationMessage, ErrorCode } from "src/utils/app.util";
@@ -27,7 +31,8 @@ export class ConversationService {
     private advertisementModel: Model<Advertisement>,
     @InjectModel(Blogs.name) private blogsModel: Model<Blogs>,
     @InjectModel(Artisan.name) private artisanModel: Model<Artisan>,
-    @InjectModel(User.name) private userModel: Model<User>
+    @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Rating.name) private ratingModel: Model<Rating>
   ) {}
 
   async addArtisan(
@@ -149,23 +154,16 @@ export class ConversationService {
   }
 
   async deleteArtisan(id: string): Promise<ArtisanApiResponse> {
-    const deletedArtisan = await this.artisanModel.deleteOne({
-      where: { id: id },
-    });
-
-    if (deletedArtisan.deletedCount === 1) {
-      return new ArtisanApiResponse(
-        NotificationMessage.ARTISAN_DELETED,
-        NotificationMessage.SUCCESS_STATUS,
-        ErrorCode.HTTP_200
-      );
-    } else {
-      return new ArtisanApiResponse(
-        NotificationMessage.ARTISAN_NOT_FOUND,
-        NotificationMessage.FAIL_STATUS,
-        ErrorCode.HTTP_404
-      );
-    }
+    const artisan = await this.artisanModel.findById(id);
+    if (!artisan)
+      throw new RecordNotFoundException(`Artisan with ID ${id} not found`);
+    await this.artisanModel.findByIdAndDelete(id);
+    await this.ratingModel.deleteMany({ artisanId: id });
+    return new ArtisanApiResponse(
+      NotificationMessage.ARTISAN_DELETED,
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
   }
 
   async deleteAdvertisement(id: string): Promise<ArtisanApiResponse> {
@@ -266,10 +264,14 @@ export class ConversationService {
     id: string,
     payload: AdvertisementRequest
   ): Promise<ArtisanApiResponse> {
-    const existingAdvert = await this.advertisementModel.findByIdAndUpdate(id, payload, {
-      new: true,
-      runValidators: true,
-    });
+    const existingAdvert = await this.advertisementModel.findByIdAndUpdate(
+      id,
+      payload,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
     if (!existingAdvert) {
       return new ArtisanApiResponse(
         NotificationMessage.ADVERTISEMENT_NOT_FOUND,

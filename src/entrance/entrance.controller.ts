@@ -5,6 +5,8 @@ import { ArtisanApiResponse } from "src/model/app.response.model";
 import { ErrorCode } from "src/utils/app.util";
 import {
   AccountActivationRequest,
+  ArtisanRequest,
+  RatingRequest,
   VisitorRequest,
 } from "src/model/app.request.model";
 import { ApiTags } from "@nestjs/swagger";
@@ -40,6 +42,13 @@ export class EntranceController {
     limit: number
   ): Promise<ArtisanApiResponse> {
     return await this.entranceService.listPaginatedArtisan(page, limit);
+  }
+
+  @Post("artisans/rating")
+  async rateArtisan(
+    @Body() payload: RatingRequest
+  ): Promise<ArtisanApiResponse> {
+    return await this.entranceService.rateArtisan(payload);
   }
 
   @Get("recent/blog")

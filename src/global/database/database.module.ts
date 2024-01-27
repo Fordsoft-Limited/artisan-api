@@ -1,6 +1,5 @@
 import { Global, Logger, Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-
 import { MongooseModule } from "@nestjs/mongoose";
 import { AppConfig } from "src/config/app.config";
 import {

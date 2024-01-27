@@ -6,7 +6,13 @@ export class Artisan extends Document {
   @Prop()
   businessType: string;
 
-  @Prop()
+  @Prop({ type: Number, default: 0 })
+  totalRatings: number;
+
+  @Prop({ type: Number, default: 0 })
+  ratingCount: number;
+
+  @Prop({ type: Number, default: 0 })
   rank: number;
 
   @Prop()

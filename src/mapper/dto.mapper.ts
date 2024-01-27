@@ -19,7 +19,7 @@ export class Mapper {
 
   static mapToArtisanResponse(artisan: Artisan): any {
     return {
-      id: artisan["id"],
+      id: artisan.id,
       businessType: artisan.businessType,
       rank: artisan.rank,
       businessName: artisan.businessName,
@@ -69,9 +69,9 @@ export class Mapper {
       author: this.mapToUser(blog.author),
     };
   }
-  static mapToGuest(guest: Guests): any {
+  static mapToGuest(guest: any): any {
     return {
-      id: guest["id"],
+      id: guest.id,
       reasonForVisit: guest.reasonForVisit,
       methodOfContact: guest.methodOfContact,
       numberOfVisit: guest.numberOfVisit,

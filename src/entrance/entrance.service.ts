@@ -4,6 +4,7 @@ import { ErrorCode, NotificationMessage } from "src/utils/app.util";
 import { ArtisanApiResponse } from "src/model/app.response.model";
 import {
   AccountActivationRequest,
+  RatingRequest,
   VisitorRequest,
 } from "src/model/app.request.model";
 import { InjectModel } from "@nestjs/mongoose";
@@ -17,6 +18,8 @@ import { Mapper } from "src/mapper/dto.mapper";
 import { DEFAULT_PAGE, DEFAULT_SIZE } from "src/utils/constants";
 import { Advertisement } from "src/model/advertisement.schema";
 import { Artisan } from "src/model/artisan.schema";
+import { RecordNotFoundException } from "src/filters/app.custom.exception";
+import { Rating } from "src/model/rating.schema";
 
 @Injectable()
 export class EntranceService {
@@ -27,8 +30,28 @@ export class EntranceService {
     @InjectModel(Blogs.name) private blogsModel: Model<Blogs>,
     @InjectModel(Advertisement.name)
     private advertisementModel: Model<Advertisement>,
-    @InjectModel(Artisan.name) private artisanModel: Model<Artisan>
+    @InjectModel(Artisan.name) private artisanModel: Model<Artisan>,
+    @InjectModel(Rating.name) private ratingModel: Model<Rating>
   ) {}
+
+  async rateArtisan(payload: RatingRequest): Promise<ArtisanApiResponse> {
+    const artisan = await this.artisanModel.findById(payload.artisanId);
+    if (!artisan)
+      throw new RecordNotFoundException(NotificationMessage.RECORD_NOT_FOUND);
+
+      const newRating: Rating = new this.ratingModel({ userId: payload.userId, rating: payload.rating });
+      artisan.totalRatings += payload.rating;
+      artisan.ratingCount += 1;
+      artisan.rank = artisan.totalRatings / artisan.ratingCount;
+      await artisan.save();
+      await newRating.save();
+    return new ArtisanApiResponse(
+      NotificationMessage.RATING_ADDED,
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
+  }
+
   async listPaginatedAdvertisement(
     page: number = DEFAULT_PAGE,
     limit: number = DEFAULT_SIZE

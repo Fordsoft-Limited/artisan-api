@@ -1,6 +1,6 @@
 import { ContactMethod } from "./guest.schema";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsNotEmpty, IsObject, IsOptional, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString } from "class-validator";
 import { IsPhoneNumber } from "../validators/phone-validation.decorator";
 
 export class BaseRequest {
@@ -111,6 +111,12 @@ export class ArtisanRequest extends BaseRequest{
   businessName: string;
   @ApiProperty()
   websiteLink: string;
+  @ApiProperty()
+  street: string;
+  @ApiProperty()
+  city: string;
+  @ApiProperty()
+  postalCode:string
 }
 
 export class BlogCreateRequest {
@@ -122,4 +128,15 @@ export class BlogCreateRequest {
   @IsNotEmpty()
   @IsString()
   description: string;
+}
+
+export class RatingRequest{
+  @ApiProperty() 
+  artisanId: string;
+  @ApiProperty()
+  @IsString()
+  userId: string;
+  @ApiProperty()
+  @IsNumber()
+  rating: number
 }
