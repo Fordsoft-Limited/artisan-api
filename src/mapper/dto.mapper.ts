@@ -43,7 +43,7 @@ export class Mapper {
     return {
       username: user.username,
       id: user.id,
-      name: contacts["name"],
+      name: contacts.name,
     };
   }
 
@@ -58,13 +58,15 @@ export class Mapper {
       postalCode: contact?.postalCode,
     };
   }
-  static mapToBlogs(blog: Blogs): any {
+  static mapToBlogs(blog: any): any {
     return {
-      id: blog["id"],
+      id: blog.id,
       title: blog.title,
       description: blog.description,
       mediaName: blog.mediaName,
-      author: this.mapToUser(blog["author"]),
+      createdAt: blog.createdAt,
+      updatedAt: blog.updatedAt,
+      author: this.mapToUser(blog.author),
     };
   }
   static mapToGuest(guest: Guests): any {

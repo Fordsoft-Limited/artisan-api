@@ -6,7 +6,6 @@ import { Model } from "mongoose";
 import { LoginRequest } from "src/entrance/model/login.model";
 import { RecordNotFoundException } from "src/filters/app.custom.exception";
 import { Mapper } from "src/mapper/dto.mapper";
-import { Advertisement } from "src/model/advertisement.schema";
 import { AccountActivationRequest } from "src/model/app.request.model";
 import {
   ArtisanApiResponse,

@@ -1,13 +1,12 @@
-import { Transform, Type } from 'class-transformer';
-export class ArtisanApiResponse{
-    data: any;
-    message: string;
-    statusCode: number;
-    constructor(data:any, message: string, statusCode:number){
-       this.data=data;
-       this.message=message;
-       this.statusCode=statusCode;
-    }
+export class ArtisanApiResponse {
+  message: string;
+  statusCode: number;
+  data: any;
+  constructor(data: any, message: string, statusCode: number) {
+    this.data = data;
+    this.message = message;
+    this.statusCode = statusCode;
+  }
 }
 
 class ContactResponse {

@@ -6,9 +6,7 @@ import {
   Param,
   Post,
   Put,
-  Query,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
 import { ApiBody, ApiConsumes, ApiTags } from "@nestjs/swagger";
@@ -16,15 +14,17 @@ import { ArtisanApiResponse } from "src/model/app.response.model";
 import { ConversationService } from "./conversation.service";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { LoginUser } from "src/middleware/login.user";
-import { GetUserMiddleware } from "src/middleware/get-user.middleware";
 import { AdvertisementRequest, ArtisanRequest, BlogCreateRequest } from "src/model/app.request.model";
 import { ErrorCode } from "src/utils/app.util";
+import { BaseAuthController } from "src/utils/auth.util";
 
 @ApiTags("Administrative Actions")
 @Controller("actions")
-@UseGuards(GetUserMiddleware)
-export class ConversationController {
-  constructor(private conversationService: ConversationService) {}
+export class ConversationController  extends BaseAuthController{
+  
+  constructor(private conversationService: ConversationService) {
+    super()
+  }
   @Post("/blogs")
   @UseInterceptors(FileInterceptor("file"))
   @ApiConsumes("multipart/form-data", "application/json")

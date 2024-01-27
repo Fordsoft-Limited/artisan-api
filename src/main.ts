@@ -16,6 +16,15 @@ async function bootstrap() {
     .setDescription("A set of API for management of the artisan website and administrative dashboard")
     .setVersion("1.0")
     .addTag("Artisan","Web Service")
+    .addBearerAuth(
+      {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          name: 'JWT',
+          description: 'Enter JWT token',
+          in: 'header',
+      })
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("swagger", app, document);

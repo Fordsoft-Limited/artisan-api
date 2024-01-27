@@ -4,19 +4,20 @@ import {
   Get,
   Post,
   Query,
-  UseGuards,
 } from "@nestjs/common";
 import { ArtisanApiResponse } from "src/model/app.response.model";
 import { AdminService } from "./admin.service";
 import { UserInvitationRequest } from "src/model/app.request.model";
 import { ApiTags } from "@nestjs/swagger";
 import { ApiPath } from "src/utils/path.param";
-import { GetUserMiddleware } from "src/middleware/get-user.middleware";
+import { BaseAuthController } from "src/utils/auth.util";
 @ApiTags("Administrative Report")
 @Controller("reports")
-@UseGuards(GetUserMiddleware)
-export class AdminController {
-  constructor(private adminService: AdminService) {}
+export class AdminController extends BaseAuthController{
+  
+  constructor(private adminService: AdminService) {
+    super()
+  }
 
   @Get("visitors")
   async getPaginatedVisitors(
