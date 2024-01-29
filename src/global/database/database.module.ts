@@ -16,6 +16,7 @@ import { Setting, SettingSchema } from "src/model/setting.shema";
 import { User, UserSchema } from "src/model/user.schema";
 import { GlobalService } from "./global.service";
 import { Artisan, ArtisanSchema } from "src/model/artisan.schema";
+import { BlogComments, BlogCommentsSchema } from "src/model/comments.schema";
 
 @Global()
 @Module({
@@ -40,7 +41,8 @@ import { Artisan, ArtisanSchema } from "src/model/artisan.schema";
       { name: Blogs.name, schema: BlogsSchema },
       { name: Setting.name, schema: SettingSchema },
       { name: Role.name, schema: RoleSchema },
-      {name: Artisan.name,schema: ArtisanSchema}
+      {name: Artisan.name,schema: ArtisanSchema},
+      {name: BlogComments.name, schema: BlogCommentsSchema}
     ]),
   ],
   providers: [GlobalService],
