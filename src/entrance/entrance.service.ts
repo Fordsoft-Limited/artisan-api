@@ -4,6 +4,7 @@ import { ErrorCode, NotificationMessage } from "src/utils/app.util";
 import { ArtisanApiResponse } from "src/model/app.response.model";
 import {
   AccountActivationRequest,
+  BlogCommentRequest,
   RatingRequest,
   VisitorRequest,
 } from "src/model/app.request.model";
@@ -20,6 +21,7 @@ import { Advertisement } from "src/model/advertisement.schema";
 import { Artisan } from "src/model/artisan.schema";
 import { RecordNotFoundException } from "src/filters/app.custom.exception";
 import { Rating } from "src/model/rating.schema";
+import { BlogComments } from "src/model/comments.schema";
 
 @Injectable()
 export class EntranceService {
@@ -31,7 +33,9 @@ export class EntranceService {
     @InjectModel(Advertisement.name)
     private advertisementModel: Model<Advertisement>,
     @InjectModel(Artisan.name) private artisanModel: Model<Artisan>,
-    @InjectModel(Rating.name) private ratingModel: Model<Rating>
+    @InjectModel(Rating.name) private ratingModel: Model<Rating>,
+    @InjectModel(BlogComments.name)
+    private blogCommentModel: Model<BlogComments>
   ) {}
 
   async rateArtisan(payload: RatingRequest): Promise<ArtisanApiResponse> {
@@ -39,14 +43,49 @@ export class EntranceService {
     if (!artisan)
       throw new RecordNotFoundException(NotificationMessage.RECORD_NOT_FOUND);
 
-      const newRating: Rating = new this.ratingModel({ userId: payload.userId, rating: payload.rating });
-      artisan.totalRatings += payload.rating;
-      artisan.ratingCount += 1;
-      artisan.rank = artisan.totalRatings / artisan.ratingCount;
-      await artisan.save();
-      await newRating.save();
+    const newRating: Rating = new this.ratingModel({
+      userId: payload.userId,
+      rating: payload.rating,
+    });
+    artisan.totalRatings += payload.rating;
+    artisan.ratingCount += 1;
+    artisan.rank = artisan.totalRatings / artisan.ratingCount;
+    await artisan.save();
+    await newRating.save();
     return new ArtisanApiResponse(
       NotificationMessage.RATING_ADDED,
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
+  }
+
+  async addComment(
+    payload: BlogCommentRequest
+  ): Promise<ArtisanApiResponse> {
+    const blog = await this.blogsModel.findById(payload.blogId);
+
+    if (!blog) {
+      throw new RecordNotFoundException(NotificationMessage.RECORD_NOT_FOUND);
+    }
+
+    const newBlogComment: BlogComments = new this.blogCommentModel({
+      body: payload.body,
+      blogId: payload.blogId,
+      createdBy: payload.createdBy,
+    });
+
+    // Update blog's comments and commentCount properties
+    blog.comments.push(newBlogComment); // Assuming comments is an array
+    blog.commentCount = blog.comments.length;
+
+    // Save the updated blog
+    await blog.save();
+
+    // Save the new blog comment
+    await newBlogComment.save();
+
+    return new ArtisanApiResponse(
+      NotificationMessage.COMMENT_ADDED,
       NotificationMessage.SUCCESS_STATUS,
       ErrorCode.HTTP_200
     );

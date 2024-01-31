@@ -21,6 +21,7 @@ export class Blogs extends Document{
   mediaName: string;
   @Prop({ type: [BlogCommentsSchema], default: [] })
   comments: BlogComments[];
+  
   @Prop()
   commentCount:number;
 }

@@ -1,7 +1,5 @@
 import { Advertisement } from "src/model/advertisement.schema";
 import { Artisan } from "src/model/artisan.schema";
-import { Blogs } from "src/model/blog.schema";
-import { Guests } from "src/model/guest.schema";
 import { User } from "src/model/user.schema";
 
 export class Mapper {

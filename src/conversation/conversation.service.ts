@@ -134,23 +134,16 @@ export class ConversationService {
     );
   }
 
-  async deleteBlog(blogId: string): Promise<ArtisanApiResponse> {
-    const deletedBlog = await this.blogsModel.deleteOne({
-      where: { id: blogId },
-    });
-    if (deletedBlog.deletedCount === 1) {
-      return new ArtisanApiResponse(
-        NotificationMessage.BLOG_DELETED,
-        NotificationMessage.SUCCESS_STATUS,
-        ErrorCode.HTTP_200
-      );
-    } else {
-      return new ArtisanApiResponse(
-        NotificationMessage.BLOG_NOT_FOUND,
-        NotificationMessage.FAIL_STATUS,
-        ErrorCode.HTTP_404
-      );
-    }
+  async deleteBlog(id: string): Promise<ArtisanApiResponse> {
+    const blog = await this.blogsModel.findById(id);
+    if (!blog)
+      throw new RecordNotFoundException(`Blog with ID ${id} not found`);
+    await this.blogsModel.findByIdAndDelete(id);
+    return new ArtisanApiResponse(
+      NotificationMessage.BLOG_DELETED,
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
   }
 
   async deleteArtisan(id: string): Promise<ArtisanApiResponse> {
@@ -167,43 +160,29 @@ export class ConversationService {
   }
 
   async deleteAdvertisement(id: string): Promise<ArtisanApiResponse> {
-    const deleteAdvertisement = await this.advertisementModel.deleteOne({
-      where: { id: id },
-    });
-
-    if (deleteAdvertisement.deletedCount === 1) {
-      return new ArtisanApiResponse(
-        NotificationMessage.ADVERISEMENT_DELETED,
-        NotificationMessage.SUCCESS_STATUS,
-        ErrorCode.HTTP_200
+    const advertisement = await this.advertisementModel.findById(id);
+    if (!advertisement)
+      throw new RecordNotFoundException(
+        `Advertisement with ID ${id} not found`
       );
-    } else {
-      return new ArtisanApiResponse(
-        NotificationMessage.ADVERISEMENT_NOT_FOUND,
-        NotificationMessage.FAIL_STATUS,
-        ErrorCode.HTTP_404
-      );
-    }
+    await this.advertisementModel.findByIdAndDelete(id);
+    return new ArtisanApiResponse(
+      NotificationMessage.ADVERISEMENT_DELETED,
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
   }
 
   async deleteVisitor(id: string): Promise<ArtisanApiResponse> {
-    const deleteVisitor = await this.userModel.deleteOne({
-      where: { id: id },
-    });
-
-    if (deleteVisitor.deletedCount === 1) {
-      return new ArtisanApiResponse(
-        NotificationMessage.VISITOR_DELETED,
-        NotificationMessage.SUCCESS_STATUS,
-        ErrorCode.HTTP_200
-      );
-    } else {
-      return new ArtisanApiResponse(
-        NotificationMessage.VISITOR_NOT_FOUND,
-        NotificationMessage.FAIL_STATUS,
-        ErrorCode.HTTP_404
-      );
-    }
+    const visitor = await this.userModel.findById(id);
+    if (!visitor)
+      throw new RecordNotFoundException(`Vistor with ID ${id} not found`);
+    await this.userModel.findByIdAndDelete(id);
+    return new ArtisanApiResponse(
+      NotificationMessage.VISITOR_DELETED,
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
   }
 
   async updateArtisan(

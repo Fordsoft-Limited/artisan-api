@@ -5,7 +5,7 @@ import { ArtisanApiResponse } from "src/model/app.response.model";
 import { ErrorCode } from "src/utils/app.util";
 import {
   AccountActivationRequest,
-  ArtisanRequest,
+  BlogCommentRequest,
   RatingRequest,
   VisitorRequest,
 } from "src/model/app.request.model";
@@ -51,11 +51,18 @@ export class EntranceController {
     return await this.entranceService.rateArtisan(payload);
   }
 
+  @Post("blogs/comment")
+  async addcomment(
+    @Body() payload: BlogCommentRequest
+  ): Promise<ArtisanApiResponse> {
+    return await this.entranceService.addComment(payload);
+  }
+
   @Get("recent/blog")
   async listRecentBlogs(
     @Query(ApiPath.PAGE_PARA)
     page: number,
-    @Query(ApiPath.LIMIT_PARAM) 
+    @Query(ApiPath.LIMIT_PARAM)
     limit: number
   ): Promise<ArtisanApiResponse> {
     return await this.entranceService.listRecentBlogs(page, limit);
