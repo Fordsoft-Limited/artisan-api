@@ -1,4 +1,13 @@
-import { Body, Controller, Get, HttpCode, Param, Post, Query, Res } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Query,
+  Res,
+} from "@nestjs/common";
 import { EntranceService } from "./entrance.service";
 import { LoginRequest } from "./model/login.model";
 import { ArtisanApiResponse } from "src/model/app.response.model";
@@ -6,7 +15,9 @@ import { ErrorCode } from "src/utils/app.util";
 import {
   AccountActivationRequest,
   BlogCommentRequest,
+  ChangePasswordRequest,
   RatingRequest,
+  ResetPasswordRequest,
   VisitorRequest,
 } from "src/model/app.request.model";
 import { ApiTags } from "@nestjs/swagger";
@@ -87,5 +98,27 @@ export class EntranceController {
     visitorRequest: VisitorRequest
   ): Promise<ArtisanApiResponse> {
     return await this.entranceService.createVisitRequest(visitorRequest);
+  }
+
+  @Post("change-password/:userId")
+  async changedpassword(
+    @Param("userId") userId: string,
+    @Body() changePasswordRequest: ChangePasswordRequest
+  ): Promise<ArtisanApiResponse> {
+    return await this.entranceService.changedPassword(
+      userId,
+      changePasswordRequest
+    );
+  }
+
+  @Post("reset-password/:userId")
+  async resetpassword(
+    @Param("userId") userId: string,
+    @Body() resetPasswordRequest: ResetPasswordRequest
+  ): Promise<ArtisanApiResponse> {
+    return await this.entranceService.resetPassword(
+      userId,
+      resetPasswordRequest
+    );
   }
 }

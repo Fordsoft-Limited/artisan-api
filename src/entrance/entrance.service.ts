@@ -5,12 +5,15 @@ import { ArtisanApiResponse } from "src/model/app.response.model";
 import {
   AccountActivationRequest,
   BlogCommentRequest,
+  ChangePasswordRequest,
   RatingRequest,
+  ResetPasswordRequest,
   VisitorRequest,
 } from "src/model/app.request.model";
+import * as bcrypt from "bcrypt";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { Category } from "src/model/contact.schema";
+import { Category, Contacts } from "src/model/contact.schema";
 import { Guests } from "src/model/guest.schema";
 import { AuthService } from "src/auth/auth.service";
 import { GlobalService } from "src/global/database/global.service";
@@ -22,6 +25,7 @@ import { Artisan } from "src/model/artisan.schema";
 import { RecordNotFoundException } from "src/filters/app.custom.exception";
 import { Rating } from "src/model/rating.schema";
 import { BlogComments } from "src/model/comments.schema";
+import { User } from "src/model/user.schema";
 
 @Injectable()
 export class EntranceService {
@@ -35,7 +39,8 @@ export class EntranceService {
     @InjectModel(Artisan.name) private artisanModel: Model<Artisan>,
     @InjectModel(Rating.name) private ratingModel: Model<Rating>,
     @InjectModel(BlogComments.name)
-    private blogCommentModel: Model<BlogComments>
+    private blogCommentModel: Model<BlogComments>,
+    @InjectModel(User.name) private userModel: Model<User>
   ) {}
 
   async rateArtisan(payload: RatingRequest): Promise<ArtisanApiResponse> {
@@ -59,9 +64,7 @@ export class EntranceService {
     );
   }
 
-  async addComment(
-    payload: BlogCommentRequest
-  ): Promise<ArtisanApiResponse> {
+  async addComment(payload: BlogCommentRequest): Promise<ArtisanApiResponse> {
     const blog = await this.blogsModel.findById(payload.blogId);
 
     if (!blog) {
@@ -229,4 +232,66 @@ export class EntranceService {
       ErrorCode.HTTP_200
     );
   }
+
+  async changedPassword(
+    userId: string,
+    changePasswordRequest: ChangePasswordRequest
+  ): Promise<ArtisanApiResponse> {
+    const user = await this.findUserById(userId);
+
+    if (
+      !(await bcrypt.compare(changePasswordRequest.oldPassword, user.password))
+    ) {
+      throw new RecordNotFoundException(
+        NotificationMessage.INVALID_OLD_PASSWORD
+      );
+    }
+
+    user.password = await this.authService.hashPassword(
+      changePasswordRequest.newPassword
+    );
+    await user.save();
+
+    return new ArtisanApiResponse(
+      NotificationMessage.PASSWORD_CHANGED_SUCCESSFULLY,
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
+  }
+
+  public async findUserById(username: string): Promise<User> {
+    const existingUser = await this.userModel.findById(username).exec();
+
+    if (!existingUser) {
+      throw new RecordNotFoundException(NotificationMessage.INVALID_USER);
+    }
+
+    return existingUser;
+  }
+
+  async resetPassword(
+    userId: string,
+    resetPasswordRequest: ResetPasswordRequest
+  ): Promise<ArtisanApiResponse> {
+    const user = await this.findUserById(userId);
+
+    if (resetPasswordRequest.invitationCode !== user.invitationCode) {
+      throw new RecordNotFoundException(
+        NotificationMessage.INVALID_RESET_TOKEN
+      );
+    }
+    const hashedPassword = await this.authService.hashPassword(
+      resetPasswordRequest.newPassword
+    );
+    user.password = hashedPassword;
+    user.invitationCode = null;
+    await user.save();
+    return new ArtisanApiResponse(
+      NotificationMessage.PASSWORD_RESET_SUCCESSFULLY,
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
+  }
+
+  
 }

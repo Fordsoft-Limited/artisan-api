@@ -153,3 +153,21 @@ export class BlogCommentRequest {
   @IsString()
   createdBy: string;
 }
+
+export class ChangePasswordRequest {
+  @ApiProperty()
+  @IsNotEmpty()
+  oldPassword: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  newPassword: string;
+}
+
+export class ResetPasswordRequest {
+  @ApiProperty()
+  @IsNotEmpty()
+  invitationCode: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  newPassword: string;
+}

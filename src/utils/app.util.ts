@@ -40,6 +40,11 @@ export class NotificationMessage{
     static readonly UPDATE_ARTISAN_SUCCESS:string="Artisan update Successfully"
     static readonly UPDATE_BLOG_SUCCESS:string="Blog update Successfully"
     static readonly UPDATE_ADVERTISEMENT_SUCCESS:string="ADVERTISEMENT update Successfully"
+    static readonly INVALID_OLD_PASSWORD:string="Change password number not valid or have been previously used"
+    static readonly PASSWORD_CHANGED_SUCCESSFULLY
+     :string="Great! You have successfully changed your password"
+    static readonly INVALID_RESET_TOKEN:string="Reset password number not valid or have been previously used"
+    static readonly PASSWORD_RESET_SUCCESSFULLY:string="Great! You have successfully reset your password "
 
 
 
