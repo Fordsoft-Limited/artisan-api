@@ -16,6 +16,7 @@ import {
   AccountActivationRequest,
   BlogCommentRequest,
   ChangePasswordRequest,
+  ForgotPasswordRequest,
   RatingRequest,
   ResetPasswordRequest,
   VisitorRequest,
@@ -119,6 +120,17 @@ export class EntranceController {
     return await this.entranceService.resetPassword(
       userId,
       resetPasswordRequest
+    );
+  }
+
+  @Post("forgot-password/:userId")
+  async forgetpassword(
+    @Param("userId") userId: string,
+    @Body() forgotPasswordRequest: ForgotPasswordRequest
+  ): Promise<ArtisanApiResponse> {
+    return await this.entranceService.forgotPassword(
+      userId,
+      forgotPasswordRequest
     );
   }
 }

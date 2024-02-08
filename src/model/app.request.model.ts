@@ -166,7 +166,16 @@ export class ChangePasswordRequest {
 export class ResetPasswordRequest {
   @ApiProperty()
   @IsNotEmpty()
-  invitationCode: string;
+  oldPassword: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  newPassword: string;
+}
+
+export class ForgotPasswordRequest {
+  @ApiProperty()
+  @IsNotEmpty()
+  username: string;
   @ApiProperty()
   @IsNotEmpty()
   newPassword: string;

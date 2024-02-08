@@ -43,9 +43,10 @@ export class NotificationMessage{
     static readonly INVALID_OLD_PASSWORD:string="Change password number not valid or have been previously used"
     static readonly PASSWORD_CHANGED_SUCCESSFULLY
      :string="Great! You have successfully changed your password"
-    static readonly INVALID_RESET_TOKEN:string="Reset password number not valid or have been previously used"
-    static readonly PASSWORD_RESET_SUCCESSFULLY:string="Great! You have successfully reset your password "
-
+    static readonly INVALID_RESET:string="Reset password code not valid or have been previously used"
+    static readonly PASSWORD_RESET:string="Great! You have successfully reset your password "
+    static readonly FORGOT_PASSWORD:string="Great! You have successfully reset your password "
+    static readonly INVALID_INVITATION:string="Invitation code provided is invalid"
 
 
 

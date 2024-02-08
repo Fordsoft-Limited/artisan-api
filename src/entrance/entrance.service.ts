@@ -6,6 +6,7 @@ import {
   AccountActivationRequest,
   BlogCommentRequest,
   ChangePasswordRequest,
+  ForgotPasswordRequest,
   RatingRequest,
   ResetPasswordRequest,
   VisitorRequest,
@@ -26,6 +27,7 @@ import { RecordNotFoundException } from "src/filters/app.custom.exception";
 import { Rating } from "src/model/rating.schema";
 import { BlogComments } from "src/model/comments.schema";
 import { User } from "src/model/user.schema";
+import { NotificationService } from "src/notification/notification.service";
 
 @Injectable()
 export class EntranceService {
@@ -235,23 +237,20 @@ export class EntranceService {
 
   async changedPassword(
     userId: string,
-    changePasswordRequest: ChangePasswordRequest
+    payload: ChangePasswordRequest
   ): Promise<ArtisanApiResponse> {
-    const user = await this.findUserById(userId);
-
+    const user = await this.findUserByUsername(userId);
     if (
-      !(await bcrypt.compare(changePasswordRequest.oldPassword, user.password))
+      !(await bcrypt.compare(payload.oldPassword, user.password))
     ) {
       throw new RecordNotFoundException(
         NotificationMessage.INVALID_OLD_PASSWORD
       );
     }
-
     user.password = await this.authService.hashPassword(
-      changePasswordRequest.newPassword
+      payload.newPassword
     );
     await user.save();
-
     return new ArtisanApiResponse(
       NotificationMessage.PASSWORD_CHANGED_SUCCESSFULLY,
       NotificationMessage.SUCCESS_STATUS,
@@ -259,13 +258,11 @@ export class EntranceService {
     );
   }
 
-  public async findUserById(username: string): Promise<User> {
+  public async findUserByUsername(username: string): Promise<User> {
     const existingUser = await this.userModel.findById(username).exec();
-
     if (!existingUser) {
       throw new RecordNotFoundException(NotificationMessage.INVALID_USER);
     }
-
     return existingUser;
   }
 
@@ -273,25 +270,46 @@ export class EntranceService {
     userId: string,
     resetPasswordRequest: ResetPasswordRequest
   ): Promise<ArtisanApiResponse> {
-    const user = await this.findUserById(userId);
+    const user = await this.findUserByUsername(userId);
 
-    if (resetPasswordRequest.invitationCode !== user.invitationCode) {
-      throw new RecordNotFoundException(
-        NotificationMessage.INVALID_RESET_TOKEN
-      );
+    if (resetPasswordRequest.oldPassword === user.password) {
+      throw new RecordNotFoundException(NotificationMessage.SUCCESS_STATUS);
     }
     const hashedPassword = await this.authService.hashPassword(
       resetPasswordRequest.newPassword
     );
     user.password = hashedPassword;
-    user.invitationCode = null;
+    
     await user.save();
     return new ArtisanApiResponse(
-      NotificationMessage.PASSWORD_RESET_SUCCESSFULLY,
+      NotificationMessage.PASSWORD_RESET,
       NotificationMessage.SUCCESS_STATUS,
       ErrorCode.HTTP_200
     );
   }
 
-  
+  async forgotPassword(
+    userId: string,
+    forgotPasswordRequest: ForgotPasswordRequest
+  ): Promise<ArtisanApiResponse> {
+    const user = await this.findUserByUsername(userId);
+    if (!user) {
+      throw new RecordNotFoundException(NotificationMessage.RECORD_NOT_FOUND);
+    }
+    
+    if (forgotPasswordRequest.username === user.username) {
+      throw new RecordNotFoundException(NotificationMessage.SUCCESS_STATUS);
+    }
+    // Update the password
+    const hashedPassword = await this.authService.hashPassword(
+      forgotPasswordRequest.newPassword
+    );
+    user.password = hashedPassword;
+    await user.save();
+    return new ArtisanApiResponse(
+      NotificationMessage.FORGOT_PASSWORD,
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
+  }
 }
