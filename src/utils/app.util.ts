@@ -10,6 +10,8 @@ export class ErrorCode{
 }
 export class NotificationMessage{
     static readonly RATING_ADDED:string="Great rating added sucessfully"
+        static readonly COMMENT_ADDED:string="Great comment added sucessfully"
+
     static readonly FILE_NOT_FOUND:string="The file you specified not found"
     static readonly FAIL_STATUS:string="Fail"
     static readonly SUCCESS_STATUS:string="Success"
@@ -38,7 +40,13 @@ export class NotificationMessage{
     static readonly UPDATE_ARTISAN_SUCCESS:string="Artisan update Successfully"
     static readonly UPDATE_BLOG_SUCCESS:string="Blog update Successfully"
     static readonly UPDATE_ADVERTISEMENT_SUCCESS:string="ADVERTISEMENT update Successfully"
-
+    static readonly INVALID_OLD_PASSWORD:string="Change password number not valid or have been previously used"
+    static readonly PASSWORD_CHANGED_SUCCESSFULLY
+     :string="Great! You have successfully changed your password"
+    static readonly INVALID_RESET:string="Reset password code not valid or have been previously used"
+    static readonly PASSWORD_RESET:string="Great! You have successfully reset your password "
+    static readonly FORGOT_PASSWORD:string="Great! You have successfully reset your password "
+    static readonly INVALID_INVITATION:string="Invitation code provided is invalid"
 
 
 

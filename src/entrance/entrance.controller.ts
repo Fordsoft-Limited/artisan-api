@@ -1,12 +1,24 @@
-import { Body, Controller, Get, HttpCode, Param, Post, Query, Res } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Query,
+  Res,
+} from "@nestjs/common";
 import { EntranceService } from "./entrance.service";
 import { LoginRequest } from "./model/login.model";
 import { ArtisanApiResponse } from "src/model/app.response.model";
 import { ErrorCode } from "src/utils/app.util";
 import {
   AccountActivationRequest,
-  ArtisanRequest,
+  BlogCommentRequest,
+  ChangePasswordRequest,
+  ForgotPasswordRequest,
   RatingRequest,
+  ResetPasswordRequest,
   VisitorRequest,
 } from "src/model/app.request.model";
 import { ApiTags } from "@nestjs/swagger";
@@ -51,11 +63,18 @@ export class EntranceController {
     return await this.entranceService.rateArtisan(payload);
   }
 
+  @Post("blogs/comment")
+  async addcomment(
+    @Body() payload: BlogCommentRequest
+  ): Promise<ArtisanApiResponse> {
+    return await this.entranceService.addComment(payload);
+  }
+
   @Get("recent/blog")
   async listRecentBlogs(
     @Query(ApiPath.PAGE_PARA)
     page: number,
-    @Query(ApiPath.LIMIT_PARAM) 
+    @Query(ApiPath.LIMIT_PARAM)
     limit: number
   ): Promise<ArtisanApiResponse> {
     return await this.entranceService.listRecentBlogs(page, limit);
@@ -80,5 +99,38 @@ export class EntranceController {
     visitorRequest: VisitorRequest
   ): Promise<ArtisanApiResponse> {
     return await this.entranceService.createVisitRequest(visitorRequest);
+  }
+
+  @Post("change-password/:userId")
+  async changedpassword(
+    @Param("userId") userId: string,
+    @Body() changePasswordRequest: ChangePasswordRequest
+  ): Promise<ArtisanApiResponse> {
+    return await this.entranceService.changedPassword(
+      userId,
+      changePasswordRequest
+    );
+  }
+
+  @Post("reset-password/:userId")
+  async resetpassword(
+    @Param("userId") userId: string,
+    @Body() resetPasswordRequest: ResetPasswordRequest
+  ): Promise<ArtisanApiResponse> {
+    return await this.entranceService.resetPassword(
+      userId,
+      resetPasswordRequest
+    );
+  }
+
+  @Post("forgot-password/:userId")
+  async forgetpassword(
+    @Param("userId") userId: string,
+    @Body() forgotPasswordRequest: ForgotPasswordRequest
+  ): Promise<ArtisanApiResponse> {
+    return await this.entranceService.forgotPassword(
+      userId,
+      forgotPasswordRequest
+    );
   }
 }

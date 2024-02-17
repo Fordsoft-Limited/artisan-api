@@ -4,12 +4,17 @@ import { ErrorCode, NotificationMessage } from "src/utils/app.util";
 import { ArtisanApiResponse } from "src/model/app.response.model";
 import {
   AccountActivationRequest,
+  BlogCommentRequest,
+  ChangePasswordRequest,
+  ForgotPasswordRequest,
   RatingRequest,
+  ResetPasswordRequest,
   VisitorRequest,
 } from "src/model/app.request.model";
+import * as bcrypt from "bcrypt";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { Category } from "src/model/contact.schema";
+import { Category, Contacts } from "src/model/contact.schema";
 import { Guests } from "src/model/guest.schema";
 import { AuthService } from "src/auth/auth.service";
 import { GlobalService } from "src/global/database/global.service";
@@ -20,6 +25,9 @@ import { Advertisement } from "src/model/advertisement.schema";
 import { Artisan } from "src/model/artisan.schema";
 import { RecordNotFoundException } from "src/filters/app.custom.exception";
 import { Rating } from "src/model/rating.schema";
+import { BlogComments } from "src/model/comments.schema";
+import { User } from "src/model/user.schema";
+import { NotificationService } from "src/notification/notification.service";
 
 @Injectable()
 export class EntranceService {
@@ -31,7 +39,10 @@ export class EntranceService {
     @InjectModel(Advertisement.name)
     private advertisementModel: Model<Advertisement>,
     @InjectModel(Artisan.name) private artisanModel: Model<Artisan>,
-    @InjectModel(Rating.name) private ratingModel: Model<Rating>
+    @InjectModel(Rating.name) private ratingModel: Model<Rating>,
+    @InjectModel(BlogComments.name)
+    private blogCommentModel: Model<BlogComments>,
+    @InjectModel(User.name) private userModel: Model<User>
   ) {}
 
   async rateArtisan(payload: RatingRequest): Promise<ArtisanApiResponse> {
@@ -39,14 +50,47 @@ export class EntranceService {
     if (!artisan)
       throw new RecordNotFoundException(NotificationMessage.RECORD_NOT_FOUND);
 
-      const newRating: Rating = new this.ratingModel({ userId: payload.userId, rating: payload.rating });
-      artisan.totalRatings += payload.rating;
-      artisan.ratingCount += 1;
-      artisan.rank = artisan.totalRatings / artisan.ratingCount;
-      await artisan.save();
-      await newRating.save();
+    const newRating: Rating = new this.ratingModel({
+      userId: payload.userId,
+      rating: payload.rating,
+    });
+    artisan.totalRatings += payload.rating;
+    artisan.ratingCount += 1;
+    artisan.rank = artisan.totalRatings / artisan.ratingCount;
+    await artisan.save();
+    await newRating.save();
     return new ArtisanApiResponse(
       NotificationMessage.RATING_ADDED,
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
+  }
+
+  async addComment(payload: BlogCommentRequest): Promise<ArtisanApiResponse> {
+    const blog = await this.blogsModel.findById(payload.blogId);
+
+    if (!blog) {
+      throw new RecordNotFoundException(NotificationMessage.RECORD_NOT_FOUND);
+    }
+
+    const newBlogComment: BlogComments = new this.blogCommentModel({
+      body: payload.body,
+      blogId: payload.blogId,
+      createdBy: payload.createdBy,
+    });
+
+    // Update blog's comments and commentCount properties
+    blog.comments.push(newBlogComment); // Assuming comments is an array
+    blog.commentCount = blog.comments.length;
+
+    // Save the updated blog
+    await blog.save();
+
+    // Save the new blog comment
+    await newBlogComment.save();
+
+    return new ArtisanApiResponse(
+      NotificationMessage.COMMENT_ADDED,
       NotificationMessage.SUCCESS_STATUS,
       ErrorCode.HTTP_200
     );
@@ -186,6 +230,84 @@ export class EntranceService {
     // Return a success response
     return new ArtisanApiResponse(
       NotificationMessage.VISITOR_FORM_SUBMITTED,
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
+  }
+
+  async changedPassword(
+    userId: string,
+    payload: ChangePasswordRequest
+  ): Promise<ArtisanApiResponse> {
+    const user = await this.findUserByUsername(userId);
+    if (
+      !(await bcrypt.compare(payload.oldPassword, user.password))
+    ) {
+      throw new RecordNotFoundException(
+        NotificationMessage.INVALID_OLD_PASSWORD
+      );
+    }
+    user.password = await this.authService.hashPassword(
+      payload.newPassword
+    );
+    await user.save();
+    return new ArtisanApiResponse(
+      NotificationMessage.PASSWORD_CHANGED_SUCCESSFULLY,
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
+  }
+
+  public async findUserByUsername(username: string): Promise<User> {
+    const existingUser = await this.userModel.findById(username).exec();
+    if (!existingUser) {
+      throw new RecordNotFoundException(NotificationMessage.INVALID_USER);
+    }
+    return existingUser;
+  }
+
+  async resetPassword(
+    userId: string,
+    resetPasswordRequest: ResetPasswordRequest
+  ): Promise<ArtisanApiResponse> {
+    const user = await this.findUserByUsername(userId);
+
+    if (resetPasswordRequest.oldPassword === user.password) {
+      throw new RecordNotFoundException(NotificationMessage.SUCCESS_STATUS);
+    }
+    const hashedPassword = await this.authService.hashPassword(
+      resetPasswordRequest.newPassword
+    );
+    user.password = hashedPassword;
+    
+    await user.save();
+    return new ArtisanApiResponse(
+      NotificationMessage.PASSWORD_RESET,
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
+  }
+
+  async forgotPassword(
+    userId: string,
+    forgotPasswordRequest: ForgotPasswordRequest
+  ): Promise<ArtisanApiResponse> {
+    const user = await this.findUserByUsername(userId);
+    if (!user) {
+      throw new RecordNotFoundException(NotificationMessage.RECORD_NOT_FOUND);
+    }
+    
+    if (forgotPasswordRequest.username === user.username) {
+      throw new RecordNotFoundException(NotificationMessage.SUCCESS_STATUS);
+    }
+    // Update the password
+    const hashedPassword = await this.authService.hashPassword(
+      forgotPasswordRequest.newPassword
+    );
+    user.password = hashedPassword;
+    await user.save();
+    return new ArtisanApiResponse(
+      NotificationMessage.FORGOT_PASSWORD,
       NotificationMessage.SUCCESS_STATUS,
       ErrorCode.HTTP_200
     );

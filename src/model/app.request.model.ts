@@ -140,3 +140,43 @@ export class RatingRequest{
   @IsNumber()
   rating: number
 }
+
+export class BlogCommentRequest {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  body: string;
+  @ApiProperty()
+  @IsString()
+  blogId: string;
+  @ApiProperty()
+  @IsString()
+  createdBy: string;
+}
+
+export class ChangePasswordRequest {
+  @ApiProperty()
+  @IsNotEmpty()
+  oldPassword: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  newPassword: string;
+}
+
+export class ResetPasswordRequest {
+  @ApiProperty()
+  @IsNotEmpty()
+  oldPassword: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  newPassword: string;
+}
+
+export class ForgotPasswordRequest {
+  @ApiProperty()
+  @IsNotEmpty()
+  username: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  newPassword: string;
+}
