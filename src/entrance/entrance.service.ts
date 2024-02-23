@@ -240,16 +240,12 @@ export class EntranceService {
     payload: ChangePasswordRequest
   ): Promise<ArtisanApiResponse> {
     const user = await this.findUserByUsername(userId);
-    if (
-      !(await bcrypt.compare(payload.oldPassword, user.password))
-    ) {
+    if (!(await bcrypt.compare(payload.oldPassword, user.password))) {
       throw new RecordNotFoundException(
         NotificationMessage.INVALID_OLD_PASSWORD
       );
     }
-    user.password = await this.authService.hashPassword(
-      payload.newPassword
-    );
+    user.password = await this.authService.hashPassword(payload.newPassword);
     await user.save();
     return new ArtisanApiResponse(
       NotificationMessage.PASSWORD_CHANGED_SUCCESSFULLY,
@@ -279,7 +275,7 @@ export class EntranceService {
       resetPasswordRequest.newPassword
     );
     user.password = hashedPassword;
-    
+
     await user.save();
     return new ArtisanApiResponse(
       NotificationMessage.PASSWORD_RESET,
@@ -296,16 +292,18 @@ export class EntranceService {
     if (!user) {
       throw new RecordNotFoundException(NotificationMessage.RECORD_NOT_FOUND);
     }
-    
-    if (forgotPasswordRequest.username === user.username) {
-      throw new RecordNotFoundException(NotificationMessage.SUCCESS_STATUS);
+
+    if (forgotPasswordRequest.username !== user.username) {
+      throw new RecordNotFoundException("Username does not match.");
     }
+
     // Update the password
     const hashedPassword = await this.authService.hashPassword(
       forgotPasswordRequest.newPassword
     );
     user.password = hashedPassword;
     await user.save();
+
     return new ArtisanApiResponse(
       NotificationMessage.FORGOT_PASSWORD,
       NotificationMessage.SUCCESS_STATUS,
