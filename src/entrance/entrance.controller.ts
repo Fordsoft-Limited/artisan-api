@@ -28,6 +28,12 @@ import { ApiPath } from "src/utils/path.param";
 export class EntranceController {
   constructor(private entranceService: EntranceService) {}
 
+  @Get("status")
+  async testing(
+    
+  ): Promise<ArtisanApiResponse> {
+    return new ArtisanApiResponse("Application start", "Success", 200);
+  }
   @Get("blogs")
   async listBlogs(
     @Query(ApiPath.PAGE_PARA)
