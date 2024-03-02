@@ -30,7 +30,6 @@ export class EntranceController {
 
   @Get("status")
   async testing(
-    
   ): Promise<ArtisanApiResponse> {
     return new ArtisanApiResponse("Application start", "Success", 200);
   }
