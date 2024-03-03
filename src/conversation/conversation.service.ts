@@ -39,7 +39,7 @@ export class ConversationService {
     loginUser: any,
     file: Express.Multer.File,
     data: any
-  ): Promise<ArtisanApiResponse> {
+   ): Promise<ArtisanApiResponse> {
     const payloadData: ArtisanRequest = Mapper.parseJson<ArtisanRequest>(
       data.payload
     );
