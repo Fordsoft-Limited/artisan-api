@@ -17,7 +17,7 @@ import SecretConfig from '../config/secret.config'
         console.log("JWT_KEY::::", secret)
         return {
           secret,
-          signOptions: { expiresIn: '10m' },
+          signOptions: { expiresIn: '4000m' },
         };
       },
       inject: [ConfigService],
