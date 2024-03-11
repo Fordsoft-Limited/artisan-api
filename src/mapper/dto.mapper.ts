@@ -28,8 +28,9 @@ export class Mapper {
     };
   }
 
-  static mapToUserResponse(user: User): any {
+  static mapToUserResponse(user: any): any {
     return {
+      id: user.id,
       isActive: user.isActive,
       isBlocked: user.isBlocked,
       username: user.username,
