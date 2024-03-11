@@ -106,6 +106,10 @@ export class ConversationController  extends BaseAuthController{
   async deleteBlog(@Param("id") id: string): Promise<ArtisanApiResponse> {
     return this.conversationService.deleteBlog(id);
   }
+  @Delete("user/delete/:id")
+  async deleteUser(@Param("id") id: string): Promise<ArtisanApiResponse> {
+    return this.conversationService.deleteUser(id);
+  }
 
   @Delete("deleteArtisan/:id")
   async deleteArtisan(@Param("id") id: string): Promise<ArtisanApiResponse> {

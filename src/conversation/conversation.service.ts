@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import {
   DuplicateResourceException,
   RecordNotFoundException,
@@ -16,7 +16,7 @@ import {
 import { ArtisanApiResponse } from "src/model/app.response.model";
 import { Artisan } from "src/model/artisan.schema";
 import { Blogs } from "src/model/blog.schema";
-import { Category } from "src/model/contact.schema";
+import { Category, Contacts } from "src/model/contact.schema";
 import { Rating } from "src/model/rating.schema";
 import { User } from "src/model/user.schema";
 import { UploadService } from "src/upload/upload.service";
@@ -32,7 +32,8 @@ export class ConversationService {
     @InjectModel(Blogs.name) private blogsModel: Model<Blogs>,
     @InjectModel(Artisan.name) private artisanModel: Model<Artisan>,
     @InjectModel(User.name) private userModel: Model<User>,
-    @InjectModel(Rating.name) private ratingModel: Model<Rating>
+    @InjectModel(Rating.name) private ratingModel: Model<Rating>,
+    @InjectModel(Contacts.name) private contactModel: Model<Contacts>
   ) {}
 
   async addArtisan(
@@ -145,6 +146,12 @@ export class ConversationService {
       ErrorCode.HTTP_200
     );
   }
+ private async deleteContact(contactToDelete: Types.ObjectId): Promise<void> {
+    const contact = await this.contactModel.findById(contactToDelete._id);
+    if (contact)
+     await this.contactModel.findByIdAndDelete(contactToDelete._id);
+    
+  }
 
   async deleteArtisan(id: string): Promise<ArtisanApiResponse> {
     const artisan = await this.artisanModel.findById(id);
@@ -152,6 +159,19 @@ export class ConversationService {
       throw new RecordNotFoundException(`Artisan with ID ${id} not found`);
     await this.artisanModel.findByIdAndDelete(id);
     await this.ratingModel.deleteMany({ artisanId: id });
+    await this.deleteContact(artisan.contact)
+    return new ArtisanApiResponse(
+      NotificationMessage.ARTISAN_DELETED,
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
+  }
+  async deleteUser(id: string): Promise<ArtisanApiResponse> {
+    const user = await this.userModel.findById(id);
+    if (!user)
+      throw new RecordNotFoundException(`Artisan with ID ${id} not found`);
+    await this.userModel.findByIdAndDelete(id);
+    await this.deleteContact(user.contact)
     return new ArtisanApiResponse(
       NotificationMessage.ARTISAN_DELETED,
       NotificationMessage.SUCCESS_STATUS,
@@ -166,6 +186,7 @@ export class ConversationService {
         `Advertisement with ID ${id} not found`
       );
     await this.advertisementModel.findByIdAndDelete(id);
+    await this.deleteContact(advertisement.contact)
     return new ArtisanApiResponse(
       NotificationMessage.ADVERISEMENT_DELETED,
       NotificationMessage.SUCCESS_STATUS,
@@ -178,6 +199,7 @@ export class ConversationService {
     if (!visitor)
       throw new RecordNotFoundException(`Vistor with ID ${id} not found`);
     await this.userModel.findByIdAndDelete(id);
+    await this.deleteContact(visitor.contact)
     return new ArtisanApiResponse(
       NotificationMessage.VISITOR_DELETED,
       NotificationMessage.SUCCESS_STATUS,
