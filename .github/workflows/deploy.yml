@@ -31,8 +31,8 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           port: ${{ secrets.SERVER_PORT }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          local: ./dist
-          remote: /home/deployuser/server/artisan-api
+          source: ./dist
+          target: /home/deployuser/server/artisan-api
 
       - name: SSH into server
         uses: appleboy/ssh-action@master
