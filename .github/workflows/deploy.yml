@@ -42,7 +42,7 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            cd /home/deployuser/server/artisan-api
+            cd /home/deployuser/server/artisan-api/dist
             pm2 describe artisan-api > /dev/null
             if [ $? -eq 0 ]; then
               pm2 restart artisan-api
