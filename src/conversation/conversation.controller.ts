@@ -102,7 +102,7 @@ export class ConversationController  extends BaseAuthController{
     return await this.conversationService.addArtisan(loginUser, file, payload);
   }
 
-  @Delete("deleteBlog/:id")
+  @Delete("blog/delete/:id")
   async deleteBlog(@Param("id") id: string): Promise<ArtisanApiResponse> {
     return this.conversationService.deleteBlog(id);
   }
@@ -138,8 +138,8 @@ export class ConversationController  extends BaseAuthController{
   ): Promise<ArtisanApiResponse> {
     return this.conversationService.updateArtisan(id, payload);
   }
-//I Updated the port number to something else
-  @Put("updateBlog/:id")
+
+  @Put("blog/update/:id")
   @HttpCode(ErrorCode.HTTP_200)
   async updateBlog(
     @Param("id")
