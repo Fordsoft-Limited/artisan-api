@@ -1,0 +1,33 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - develop  # Adjust as needed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # Specify the runner environment
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2  # Action to checkout your repository code
+
+      - name: Install dependencies and build
+        run: |
+          npm install
+          npm run build  # Adjust build command as per your project setup
+
+      - name: SSH Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}  # SSH host, use secrets for security
+          username: ${{ secrets.USERNAME }}  # SSH username, use secrets for security
+          key: ${{ secrets.SSH_PRIVATE_KEY }}  # SSH private key, use secrets for security
+          port: ${{ secrets.SSH_PORT }}  # SSH port, use secrets for security
+          script: |
+            cd /home/artisan-api/public_html/server
+            git pull origin develop  
+            npm install  # Install any new dependencies
+            npm run build
+            pm2 restart artisan-api-v2
