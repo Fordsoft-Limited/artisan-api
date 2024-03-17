@@ -7,7 +7,7 @@ import { HttpExceptionFilter } from "./filters/http.filter";
 import { ValidationException } from "./filters/validation.exception";
 import { ValidationFilter } from "./filters/validation.filter";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import express from "express";
+import * as express from 'express';
 import { ExpressAdapter } from '@nestjs/platform-express';
 async function bootstrap() {
   const expressApp = express();
