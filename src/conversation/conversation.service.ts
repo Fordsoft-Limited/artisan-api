@@ -131,6 +131,7 @@ export class ConversationService {
         });
 
     await newAdvertisement.save();
+    
 
     return new ArtisanApiResponse(
       NotificationMessage.ADVERTISEMENT_SAVED,
@@ -165,6 +166,7 @@ export class ConversationService {
     await this.artisanModel.findByIdAndDelete(id);
     await this.ratingModel.deleteMany({ artisanId: id });
     await this.deleteContact(artisan.contact)
+    await this.fileUploadService.deleteFile(artisan.logo)
     return new ArtisanApiResponse(
       NotificationMessage.ARTISAN_DELETED,
       NotificationMessage.SUCCESS_STATUS,
@@ -192,6 +194,8 @@ export class ConversationService {
       );
     await this.advertisementModel.findByIdAndDelete(id);
     await this.deleteContact(advertisement.contact)
+    await this.fileUploadService.deleteFile(advertisement.fileName)
+
     return new ArtisanApiResponse(
       NotificationMessage.ADVERISEMENT_DELETED,
       NotificationMessage.SUCCESS_STATUS,
