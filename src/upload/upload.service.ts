@@ -26,9 +26,9 @@ export class UploadService {
     const filePath = path.join(FILE_UPLOAD_DIRECTORY, fileName);
 
     fs.writeFileSync(filePath, file.buffer);
-    console.log("File upload completed");
+    const originalHost = req.get('X-Forwarded-Host') || req.get('host');
     return (
-      `${req.protocol}://${req.get("host")}` +
+      `${req.protocol}://${originalHost}` +
       "/api/v1/entrance/download/file?fileName=" +
       fileName
     );

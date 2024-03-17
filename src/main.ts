@@ -7,8 +7,12 @@ import { HttpExceptionFilter } from "./filters/http.filter";
 import { ValidationException } from "./filters/validation.exception";
 import { ValidationFilter } from "./filters/validation.filter";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import express from "express";
+import { ExpressAdapter } from '@nestjs/platform-express';
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const expressApp = express();
+  expressApp.set('trust proxy', 1);
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
   app.setGlobalPrefix("api/v1");
 
   app.enableCors({
