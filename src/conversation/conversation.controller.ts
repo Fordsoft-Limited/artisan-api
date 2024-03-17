@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Req,
   UploadedFile,
   UseInterceptors,
 } from "@nestjs/common";
@@ -17,6 +18,7 @@ import { LoginUser } from "src/middleware/login.user";
 import { AdvertisementRequest, ArtisanRequest, BlogCreateRequest } from "src/model/app.request.model";
 import { ErrorCode } from "src/utils/app.util";
 import { BaseAuthController } from "src/utils/auth.util";
+import {Request} from 'express'
 
 @ApiTags("Administrative Actions")
 @Controller("actions")
@@ -46,9 +48,10 @@ export class ConversationController  extends BaseAuthController{
   async addBlog(
     @LoginUser() loginUser: any,
     @UploadedFile() file,
-    @Body() payload: any
+    @Body() payload: any,
+    @Req()req:Request
   ): Promise<ArtisanApiResponse> {
-    return await this.conversationService.addNewBlog(loginUser, file, payload);
+    return await this.conversationService.addNewBlog(loginUser, file, payload,req);
   }
 
   @Post("/advsertisement")
@@ -71,9 +74,10 @@ export class ConversationController  extends BaseAuthController{
   })
   async addNewAdvertisement(
     @UploadedFile() file,
-    @Body() payload: any
+    @Body() payload: any,
+    @Req()req: Request
   ): Promise<ArtisanApiResponse> {
-    return await this.conversationService.addNewAdvertisement(file, payload);
+    return await this.conversationService.addNewAdvertisement(file, payload,req);
   }
 
   @Post("/artisan")
@@ -97,9 +101,10 @@ export class ConversationController  extends BaseAuthController{
   async addArtisan(
     @LoginUser() loginUser: any,
     @UploadedFile() file,
-    @Body() payload: any
+    @Body() payload: any,
+    @Req()req:Request
   ): Promise<ArtisanApiResponse> {
-    return await this.conversationService.addArtisan(loginUser, file, payload);
+    return await this.conversationService.addArtisan(loginUser, file, payload,req);
   }
 
   @Delete("blog/delete/:id")

@@ -21,6 +21,7 @@ import { Rating } from "src/model/rating.schema";
 import { User } from "src/model/user.schema";
 import { UploadService } from "src/upload/upload.service";
 import { NotificationMessage, ErrorCode } from "src/utils/app.util";
+import {Request} from 'express';
 
 @Injectable()
 export class ConversationService {
@@ -39,12 +40,13 @@ export class ConversationService {
   async addArtisan(
     loginUser: any,
     file: Express.Multer.File,
-    data: any
+    data: any,
+    req: Request
   ): Promise<ArtisanApiResponse> {
     const payloadData: ArtisanRequest = Mapper.parseJson<ArtisanRequest>(
       data.payload
     );
-    const uploadedFile: string = await this.fileUploadService.uploadFile(file);
+    const uploadedFile: string = await this.fileUploadService.uploadFile(file,req);
     const existingContact = await this.globalService.checkDuplicate({
       ...payloadData,
       willIdReturn: true,
@@ -81,12 +83,13 @@ export class ConversationService {
   async addNewBlog(
     loginUser: any,
     file: Express.Multer.File,
-    data: any
+    data: any,
+    req:Request
   ): Promise<ArtisanApiResponse> {
     const payloadData: BlogCreateRequest = Mapper.parseJson<BlogCreateRequest>(
       data.payload
     );
-    const uploadedFile: string = await this.fileUploadService.uploadFile(file);
+    const uploadedFile: string = await this.fileUploadService.uploadFile(file,req);
     const newBlog = new this.blogsModel({
       ...payloadData,
       mediaName: uploadedFile,
@@ -102,11 +105,12 @@ export class ConversationService {
   }
   async addNewAdvertisement(
     file: Express.Multer.File,
-    data: any
+    data: any,
+    req: Request
   ): Promise<ArtisanApiResponse> {
     const payloadData: AdvertisementRequest =
       Mapper.parseJson<AdvertisementRequest>(data.payload);
-    const uploadedFile: string = await this.fileUploadService.uploadFile(file);
+    const uploadedFile: string = await this.fileUploadService.uploadFile(file,req);
     const existingContact = await this.globalService.checkDuplicate({
       ...payloadData,
       willIdReturn: true,
@@ -139,6 +143,7 @@ export class ConversationService {
     const blog = await this.blogsModel.findById(id);
     if (!blog)
       throw new RecordNotFoundException(`Blog with ID ${id} not found`);
+    await this.fileUploadService.deleteFile(blog.mediaName)
     await this.blogsModel.findByIdAndDelete(id);
     return new ArtisanApiResponse(
       NotificationMessage.BLOG_DELETED,

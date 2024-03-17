@@ -23,11 +23,16 @@ import {
 } from "src/model/app.request.model";
 import { ApiTags } from "@nestjs/swagger";
 import { ApiPath } from "src/utils/path.param";
+import { Response } from 'express';
+
 @ApiTags("Entrance")
 @Controller("entrance")
 export class EntranceController {
   constructor(private entranceService: EntranceService) {}
-
+  @Get('download/file')
+  async downloadFile(@Query('fileName') fileName: string, @Res() res: Response): Promise<void> {
+    await this.entranceService.downloadFile(fileName, res);
+  }
   @Get("status")
   async testing(
   ): Promise<ArtisanApiResponse> {

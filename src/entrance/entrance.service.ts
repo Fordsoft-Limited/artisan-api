@@ -14,7 +14,7 @@ import {
 import * as bcrypt from "bcrypt";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { Category, Contacts } from "src/model/contact.schema";
+import { Category } from "src/model/contact.schema";
 import { Guests } from "src/model/guest.schema";
 import { AuthService } from "src/auth/auth.service";
 import { GlobalService } from "src/global/database/global.service";
@@ -27,11 +27,14 @@ import { RecordNotFoundException } from "src/filters/app.custom.exception";
 import { Rating } from "src/model/rating.schema";
 import { BlogComments } from "src/model/comments.schema";
 import { User } from "src/model/user.schema";
-import { NotificationService } from "src/notification/notification.service";
+import { UploadService } from "src/upload/upload.service";
+import { Response } from 'express';
+
 
 @Injectable()
 export class EntranceService {
   constructor(
+    private fileUploadService: UploadService,
     private authService: AuthService,
     private globalService: GlobalService,
     @InjectModel(Guests.name) private guestsModel: Model<Guests>,
@@ -44,7 +47,9 @@ export class EntranceService {
     private blogCommentModel: Model<BlogComments>,
     @InjectModel(User.name) private userModel: Model<User>
   ) {}
-
+  async downloadFile(fileName: string, res: Response): Promise<void> {
+    await  this.fileUploadService.downloadFile(fileName, res);
+  }
   async rateArtisan(payload: RatingRequest): Promise<ArtisanApiResponse> {
     const artisan = await this.artisanModel.findById(payload.artisanId);
     if (!artisan)
@@ -157,6 +162,7 @@ export class EntranceService {
           model: "Contacts",
         },
       })
+      .sort({createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .exec();
