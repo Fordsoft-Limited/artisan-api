@@ -49,9 +49,7 @@ export class UploadService {
     if (fs.existsSync(filePath)) {
       // Delete the file
       fs.unlinkSync(filePath);
-    } else {
-      throw new FileNotFoundException(NotificationMessage.FILE_NOT_FOUND);
-    }
+    } 
   }
 
   async downloadFile(fileName: string, res: Response): Promise<void> {
