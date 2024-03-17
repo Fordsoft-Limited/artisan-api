@@ -143,8 +143,8 @@ export class ConversationService {
     const blog = await this.blogsModel.findById(id);
     if (!blog)
       throw new RecordNotFoundException(`Blog with ID ${id} not found`);
-    await this.fileUploadService.deleteFile(blog.mediaName)
     await this.blogsModel.findByIdAndDelete(id);
+    await this.fileUploadService.deleteFile(blog.mediaName)
     return new ArtisanApiResponse(
       NotificationMessage.BLOG_DELETED,
       NotificationMessage.SUCCESS_STATUS,
