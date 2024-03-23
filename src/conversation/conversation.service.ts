@@ -21,7 +21,9 @@ import { Rating } from "src/model/rating.schema";
 import { User } from "src/model/user.schema";
 import { UploadService } from "src/upload/upload.service";
 import { NotificationMessage, ErrorCode } from "src/utils/app.util";
-import {Request} from 'express';
+import { Request } from "express";
+import { Guests } from "src/model/guest.schema";
+import { DateTime } from 'luxon';
 
 @Injectable()
 export class ConversationService {
@@ -34,9 +36,64 @@ export class ConversationService {
     @InjectModel(Artisan.name) private artisanModel: Model<Artisan>,
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Rating.name) private ratingModel: Model<Rating>,
-    @InjectModel(Contacts.name) private contactModel: Model<Contacts>
+    @InjectModel(Contacts.name) private contactModel: Model<Contacts>,
+    @InjectModel(Guests.name) private guests: Model<Contacts>
   ) {}
 
+  async getVisitorsByMonth(year: number): Promise<{ [key: string]: number }> {
+    const visitorCountsByMonth: { [key: string]: number } = {};
+    for (let month = 1; month <= 12; month++) {
+      // Get the start and end date for the current month and year
+      const startDate = DateTime.fromObject({ year, month, day: 1 });
+      const endDate = startDate.endOf('month');
+
+      // Query the database to count visitors for the current month
+      const visitorCount = await this.guests
+        .countDocuments({
+          createdAt: { $gte: startDate.toJSDate(), $lt: endDate.toJSDate() },
+        })
+        .exec();
+
+      // Store the visitor count for the current month
+      const monthName = startDate.toFormat('LLL'); // Get short name of month (e.g., Jan, Feb, ...)
+      visitorCountsByMonth[monthName] = visitorCount;
+    }
+
+    return visitorCountsByMonth;
+  }
+
+  async getRecordCounts(year: number): Promise<ArtisanApiResponse> {
+    const advertisementCount = await this.advertisementModel
+      .countDocuments()
+      .exec();
+    const blogsCount = await this.blogsModel.countDocuments().exec();
+    const artisanCount = await this.artisanModel.countDocuments().exec();
+    const userCount = await this.userModel.countDocuments().exec();
+    const visitorCount = await this.guests.countDocuments().exec();
+
+    const topArtisan = await this.artisanModel
+      .find()
+      .sort({ rank: -1 }) // Sort by rank in descending order
+      .limit(5) // Limit to 5 artisans
+      .exec();
+    const topArtisanPieData = topArtisan
+      ? topArtisan.map((item) => Mapper.mapToArtisanResponse(item))
+      : [];
+    const visitorReports = await this.getVisitorsByMonth(year);
+    return new ArtisanApiResponse(
+      {
+        advertisementCount,
+        blogsCount,
+        visitorCount,
+        artisanCount,
+        userCount,
+        topArtisanPieData,
+        visitorReports,
+      },
+      NotificationMessage.SUCCESS_STATUS,
+      ErrorCode.HTTP_200
+    );
+  }
   async addArtisan(
     loginUser: any,
     file: Express.Multer.File,
@@ -46,7 +103,10 @@ export class ConversationService {
     const payloadData: ArtisanRequest = Mapper.parseJson<ArtisanRequest>(
       data.payload
     );
-    const uploadedFile: string = await this.fileUploadService.uploadFile(file,req);
+    const uploadedFile: string = await this.fileUploadService.uploadFile(
+      file,
+      req
+    );
     const existingContact = await this.globalService.checkDuplicate({
       ...payloadData,
       willIdReturn: true,
@@ -84,12 +144,15 @@ export class ConversationService {
     loginUser: any,
     file: Express.Multer.File,
     data: any,
-    req:Request
+    req: Request
   ): Promise<ArtisanApiResponse> {
     const payloadData: BlogCreateRequest = Mapper.parseJson<BlogCreateRequest>(
       data.payload
     );
-    const uploadedFile: string = await this.fileUploadService.uploadFile(file,req);
+    const uploadedFile: string = await this.fileUploadService.uploadFile(
+      file,
+      req
+    );
     const newBlog = new this.blogsModel({
       ...payloadData,
       mediaName: uploadedFile,
@@ -110,7 +173,10 @@ export class ConversationService {
   ): Promise<ArtisanApiResponse> {
     const payloadData: AdvertisementRequest =
       Mapper.parseJson<AdvertisementRequest>(data.payload);
-    const uploadedFile: string = await this.fileUploadService.uploadFile(file,req);
+    const uploadedFile: string = await this.fileUploadService.uploadFile(
+      file,
+      req
+    );
     const existingContact = await this.globalService.checkDuplicate({
       ...payloadData,
       willIdReturn: true,
@@ -131,7 +197,6 @@ export class ConversationService {
         });
 
     await newAdvertisement.save();
-    
 
     return new ArtisanApiResponse(
       NotificationMessage.ADVERTISEMENT_SAVED,
@@ -145,18 +210,16 @@ export class ConversationService {
     if (!blog)
       throw new RecordNotFoundException(`Blog with ID ${id} not found`);
     await this.blogsModel.findByIdAndDelete(id);
-    await this.fileUploadService.deleteFile(blog.mediaName)
+    await this.fileUploadService.deleteFile(blog.mediaName);
     return new ArtisanApiResponse(
       NotificationMessage.BLOG_DELETED,
       NotificationMessage.SUCCESS_STATUS,
       ErrorCode.HTTP_200
     );
   }
- private async deleteContact(contactToDelete: Types.ObjectId): Promise<void> {
+  private async deleteContact(contactToDelete: Types.ObjectId): Promise<void> {
     const contact = await this.contactModel.findById(contactToDelete._id);
-    if (contact)
-     await this.contactModel.findByIdAndDelete(contactToDelete._id);
-    
+    if (contact) await this.contactModel.findByIdAndDelete(contactToDelete._id);
   }
 
   async deleteArtisan(id: string): Promise<ArtisanApiResponse> {
@@ -165,8 +228,8 @@ export class ConversationService {
       throw new RecordNotFoundException(`Artisan with ID ${id} not found`);
     await this.artisanModel.findByIdAndDelete(id);
     await this.ratingModel.deleteMany({ artisanId: id });
-    await this.deleteContact(artisan.contact)
-    await this.fileUploadService.deleteFile(artisan.logo)
+    await this.deleteContact(artisan.contact);
+    await this.fileUploadService.deleteFile(artisan.logo);
     return new ArtisanApiResponse(
       NotificationMessage.ARTISAN_DELETED,
       NotificationMessage.SUCCESS_STATUS,
@@ -178,7 +241,7 @@ export class ConversationService {
     if (!user)
       throw new RecordNotFoundException(`Artisan with ID ${id} not found`);
     await this.userModel.findByIdAndDelete(id);
-    await this.deleteContact(user.contact)
+    await this.deleteContact(user.contact);
     return new ArtisanApiResponse(
       NotificationMessage.ARTISAN_DELETED,
       NotificationMessage.SUCCESS_STATUS,
@@ -193,8 +256,8 @@ export class ConversationService {
         `Advertisement with ID ${id} not found`
       );
     await this.advertisementModel.findByIdAndDelete(id);
-    await this.deleteContact(advertisement.contact)
-    await this.fileUploadService.deleteFile(advertisement.fileName)
+    await this.deleteContact(advertisement.contact);
+    await this.fileUploadService.deleteFile(advertisement.fileName);
 
     return new ArtisanApiResponse(
       NotificationMessage.ADVERISEMENT_DELETED,
@@ -208,7 +271,7 @@ export class ConversationService {
     if (!visitor)
       throw new RecordNotFoundException(`Vistor with ID ${id} not found`);
     await this.userModel.findByIdAndDelete(id);
-    await this.deleteContact(visitor.contact)
+    await this.deleteContact(visitor.contact);
     return new ArtisanApiResponse(
       NotificationMessage.VISITOR_DELETED,
       NotificationMessage.SUCCESS_STATUS,

@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   Param,
   Post,
@@ -27,6 +28,11 @@ export class ConversationController  extends BaseAuthController{
   constructor(private conversationService: ConversationService) {
     super()
   }
+  @Get("dashboard/:reportYear")
+  async getRecordCounts(@Param("reportYear")reportYear: number): Promise<ArtisanApiResponse> {
+    return await this.conversationService.getRecordCounts(reportYear);
+  }
+
   @Post("/blogs")
   @UseInterceptors(FileInterceptor("file"))
   @ApiConsumes("multipart/form-data", "application/json")

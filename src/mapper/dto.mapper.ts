@@ -74,6 +74,7 @@ export class Mapper {
       reasonForVisit: guest.reasonForVisit,
       methodOfContact: guest.methodOfContact,
       numberOfVisit: guest.numberOfVisit,
+      createdAt: guest.createdAt,
       contact: this.mapToContactResponse(guest["contact"]),
     };
   }
