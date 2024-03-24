@@ -12,7 +12,7 @@ export class NotificationService {
   public async sendInvitationCode(email: string): Promise<string> {
     const hashedEmail = await this.hashEmail(email);
     const invitationCode = this.generateInvitationCode(hashedEmail);
-    const activationLink = `http://localhost:5000/#/auth/reset-password?invitationCode=${invitationCode}`;
+    const activationLink = `http://admin-artisan.fordsoft.tech/#/auth/reset-password?invitationCode=${invitationCode}`;
 
     // Compose email
     const mailOptions = {
